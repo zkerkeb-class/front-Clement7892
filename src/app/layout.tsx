@@ -1,7 +1,5 @@
-import Head from "next/head";
-import Logo from "../../public/favicon.ico";
-import Navbar from "../components/NavBar/page";
 import { ReactNode } from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata = {
   title: "Crew CRM",
@@ -13,16 +11,13 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  const connecté = true;
-
   return (
-    <html lang="en">
-      <Head>
-        <link rel="icon" href={Logo} type="image/x-icon" />
-      </Head>
+    <html lang="fr">
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+      </head>
       <body>
-        {connecté && <Navbar />}
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
