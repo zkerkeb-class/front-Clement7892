@@ -39,7 +39,7 @@ export const AuthStyles: Record<string, CSSProperties> = {
     transform: "translateY(-50%)",
     background: "rgba(42, 47, 53, 0.95)",
     padding: "48px 40px",
-    width: "400px",
+    width: "500px",
     borderRadius: "24px 0 0 24px",
     backdropFilter: "blur(10px)",
     boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
@@ -124,7 +124,7 @@ export const AuthStyles: Record<string, CSSProperties> = {
   },
   imageWrapper: {
     position: "relative",
-    width: "80%",
+    width: "90%",
     height: "97vh",
     borderRadius: "50px",
     overflow: "hidden",
