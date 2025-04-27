@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { dashboardStyles } from "@/styles/dashboardStyles";
+import { DashboardStyles } from "@/styles/pages/dashboardStyles";
 
 const Dashboard: React.FC = () => {
   const { user, isLoading } = useAuth();
@@ -31,14 +31,14 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div style={dashboardStyles.welcomeCard}>
-      <h1 style={dashboardStyles.welcomeTitle}>
+    <div style={DashboardStyles.welcomeCard}>
+      <h1 style={DashboardStyles.welcomeTitle}>
         Bienvenue,{" "}
         {user?.firstName ||
           (user?.email ? user.email.split("@")[0] : "utilisateur")}
         !
       </h1>
-      <p style={dashboardStyles.welcomeText}>
+      <p style={DashboardStyles.welcomeText}>
         Vous êtes maintenant connecté au CRM Crew. Redirection en cours...
       </p>
     </div>

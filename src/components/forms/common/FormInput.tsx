@@ -1,7 +1,7 @@
 // components/forms/common/IconInput.tsx
 import { ChangeEvent } from "react";
 import Image from "next/image";
-import { pageStyles } from "@/styles/pageStyles";
+import { pageStyles } from "@/styles/pages/pageStyles";
 
 interface IconInputProps {
   type: string;

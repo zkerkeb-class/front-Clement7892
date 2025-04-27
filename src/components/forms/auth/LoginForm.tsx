@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
-import { pageStyles } from "@/styles/pageStyles";
+import { pageStyles } from "@/styles/pages/pageStyles";
 import IconInput from "@/components/forms/common/IconInput";
 import Logo_User from "@public/img/login/email.svg";
 import Logo_Password from "@public/img/login/password_img.svg";

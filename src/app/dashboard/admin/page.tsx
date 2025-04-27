@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { dashboardStyles } from "@/styles/dashboardStyles";
+import { DashboardStyles } from "@/styles/pages/dashboardStyles";
 
 const AdminDashboard: React.FC = () => {
   const router = useRouter();

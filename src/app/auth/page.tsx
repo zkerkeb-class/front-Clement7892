@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { pageStyles } from "@/styles/pageStyles";
+import { pageStyles } from "@/styles/pages/pageStyles";
 import Logo_Crew from "@public/img/logo/logo_crew.png";
 import Background_Image from "@public/img/login/one_piece.jpg";
 
