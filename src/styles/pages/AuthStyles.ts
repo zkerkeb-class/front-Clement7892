@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 
-export const AuthStyles: Record<string, CSSProperties> = {
+export const authStyles: Record<string, CSSProperties> = {
   logoWrapper: {
     position: "absolute",
     zIndex: 2,

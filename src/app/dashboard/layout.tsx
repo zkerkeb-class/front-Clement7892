@@ -3,7 +3,7 @@ import React, { ReactNode, useState } from "react";
 import NavBar from "@/components/common/NavBar";
 import { NavbarProvider } from "@/contexts/NavBarContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { DashboardStyles } from "@/styles/pages/dashboardStyles";
+import { dashboardStyles } from "@/styles/pages/dashboardStyles";
 import { CSSProperties } from "react";
 
 interface DashboardLayoutProps {
@@ -21,14 +21,14 @@ const DashboardContent: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   // Style du contenu principal
   const contentStyle: CSSProperties = {
-    ...DashboardStyles.content,
+    ...dashboardStyles.content,
     ...(hoveredIcon !== null
-      ? DashboardStyles.contentWithMenu
-      : DashboardStyles.contentFullWidth),
+      ? dashboardStyles.contentWithMenu
+      : dashboardStyles.contentFullWidth),
   };
 
   return (
-    <div style={DashboardStyles.container}>
+    <div style={dashboardStyles.container}>
       <NavBar user={user} />
       <div style={contentStyle}>{children}</div>
     </div>

@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 
-export const DashboardStyles: Record<string, CSSProperties> = {
+export const dashboardStyles: Record<string, CSSProperties> = {
   container: {
     display: "flex",
     height: "100vh",
