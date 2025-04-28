@@ -1,7 +1,7 @@
 // components/forms/common/IconInput.tsx
 import { ChangeEvent } from "react";
 import Image from "next/image";
-import { authStyles } from "@/styles/pages/login";
+import { authStyles } from "@/styles/pages/authStyles";
 
 interface IconInputProps {
   type: string;
