@@ -1,6 +1,6 @@
 // components/modals/ProfileModal/ProfilePassword.tsx
 import React, { useState } from "react";
-import { profileModalStyles } from "@/styles/components/profileModalStyles";
+import { profileModalStyles } from "@/styles/components/modals/ProfileModal/profileModalStyles";
 import { ProfilePasswordProps } from "./types";
 import { ChangePasswordRequest } from "@/services/user.service";
 
@@ -32,7 +32,6 @@ const ProfilePassword: React.FC<ProfilePasswordProps> = ({
     setPasswordError(null);
     setPasswordSuccess(null);
 
-    // Validation basique
     if (
       !passwordData.currentPassword ||
       !passwordData.newPassword ||
@@ -63,7 +62,6 @@ const ProfilePassword: React.FC<ProfilePasswordProps> = ({
         confirmPassword: passwordData.confirmPassword,
       });
 
-      // Réinitialiser le formulaire après succès
       setPasswordData({
         currentPassword: "",
         newPassword: "",
@@ -82,17 +80,7 @@ const ProfilePassword: React.FC<ProfilePasswordProps> = ({
 
   return (
     <div>
-      <h3
-        style={{
-          fontSize: "16px",
-          fontWeight: 500,
-          marginBottom: "20px",
-        }}
-      >
-        Changer votre mot de passe
-      </h3>
-
-      {/* Messages d'erreur et de succès */}
+      <h2 style={profileModalStyles.h2}>Changer votre mot de passe</h2>
       {passwordError && (
         <div
           style={{
@@ -181,7 +169,7 @@ const ProfilePassword: React.FC<ProfilePasswordProps> = ({
           borderRadius: "4px",
         }}
       >
-        <p style={{ fontSize: "13px", color: "#4B5563" }}>
+        <p style={profileModalStyles.p}>
           <strong>Conseil de sécurité :</strong> Utilisez un mot de passe unique
           et fort contenant au moins 8 caractères, des lettres majuscules,
           minuscules, des chiffres et des caractères spéciaux.

@@ -1,6 +1,6 @@
 // components/modals/ProfileModal/ProfileErrorState.tsx
 import React from "react";
-import { profileModalStyles } from "@/styles/components/profileModalStyles";
+import { profileModalStyles } from "@/styles/components/modals/ProfileModal/profileModalStyles";
 import { ProfileErrorStateProps } from "./types";
 
 const ProfileErrorState: React.FC<ProfileErrorStateProps> = ({
@@ -10,7 +10,6 @@ const ProfileErrorState: React.FC<ProfileErrorStateProps> = ({
   setIsCloseHovered,
   handleModalClick,
 }) => {
-  // Styles pour le contenu principal
   const updatedModalContainer = {
     ...profileModalStyles.modalContainer,
     maxHeight: "85vh",

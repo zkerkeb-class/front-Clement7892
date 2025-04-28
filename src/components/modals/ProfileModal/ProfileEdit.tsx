@@ -1,6 +1,6 @@
 // components/modals/ProfileModal/ProfileEdit.tsx
 import React, { useState, useEffect } from "react";
-import { profileModalStyles } from "@/styles/components/profileModalStyles";
+import { profileModalStyles } from "@/styles/components/modals/ProfileModal/profileModalStyles";
 import { ProfileEditProps } from "./types";
 import { UpdateUserRequest } from "@/services/user.service";
 
@@ -21,7 +21,6 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
   const [editSuccess, setEditSuccess] = useState<string | null>(null);
   const [isEditSubmitting, setIsEditSubmitting] = useState(false);
 
-  // Mettre à jour les données si userData change
   useEffect(() => {
     setEditData({
       firstName: userData.firstName,
@@ -45,13 +44,11 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
     setEditError(null);
     setEditSuccess(null);
 
-    // Validation basique
     if (!editData.firstName || !editData.lastName || !editData.email) {
       setEditError("Les champs Nom, Prénom et Email sont obligatoires.");
       return;
     }
 
-    // Validation de l'email simple
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(editData.email)) {
       setEditError("Veuillez saisir une adresse email valide.");
@@ -61,7 +58,6 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
     try {
       setIsEditSubmitting(true);
 
-      // Préparer les données à envoyer
       const dataToUpdate: UpdateUserRequest = {
         firstName: editData.firstName,
         lastName: editData.lastName,
@@ -69,10 +65,8 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
         phoneNumber: editData.phoneNumber || undefined,
       };
 
-      // Utiliser la fonction pour mettre à jour l'utilisateur
       const updatedUser = await updateUserData(userId, dataToUpdate);
 
-      // Mettre à jour les données locales avec les nouvelles valeurs
       setEditData({
         firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
@@ -80,7 +74,6 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
         phoneNumber: updatedUser.phoneNumber || "",
       });
 
-      // Appeler le callback onUserUpdate si fourni
       if (onUserUpdate) {
         onUserUpdate(updatedUser);
       }
@@ -97,17 +90,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
 
   return (
     <div>
-      <h3
-        style={{
-          fontSize: "16px",
-          fontWeight: 500,
-          marginBottom: "20px",
-        }}
-      >
-        Modifier mes informations
-      </h3>
-
-      {/* Messages d'erreur et de succès */}
+      <h2 style={profileModalStyles.h2}>Modifier mes informations</h2>
       {editError && (
         <div
           style={{
@@ -138,7 +121,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
 
       <form onSubmit={handleEditSubmit}>
         <div style={profileModalStyles.formField}>
-          <label style={profileModalStyles.fieldLabel}>Prénom *</label>
+          <label style={profileModalStyles.fieldLabel}>Prénom*</label>
           <input
             type="text"
             name="firstName"
@@ -150,7 +133,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
         </div>
 
         <div style={profileModalStyles.formField}>
-          <label style={profileModalStyles.fieldLabel}>Nom *</label>
+          <label style={profileModalStyles.fieldLabel}>Nom*</label>
           <input
             type="text"
             name="lastName"
@@ -162,7 +145,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
         </div>
 
         <div style={profileModalStyles.formField}>
-          <label style={profileModalStyles.fieldLabel}>Email *</label>
+          <label style={profileModalStyles.fieldLabel}>Email*</label>
           <input
             type="email"
             name="email"
@@ -201,20 +184,6 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
           </button>
         </div>
       </form>
-
-      <div
-        style={{
-          marginTop: "30px",
-          padding: "12px",
-          backgroundColor: "#F3F4F6",
-          borderRadius: "4px",
-        }}
-      >
-        <p style={{ fontSize: "13px", color: "#4B5563" }}>
-          <strong>Note :</strong> Les champs marqués d'un astérisque (*) sont
-          obligatoires.
-        </p>
-      </div>
     </div>
   );
 };
