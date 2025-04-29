@@ -91,32 +91,10 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
   return (
     <div>
       <h2 style={profileModalStyles.h2}>Modifier mes informations</h2>
-      {editError && (
-        <div
-          style={{
-            backgroundColor: "#FEE2E2",
-            color: "#B91C1C",
-            padding: "10px 12px",
-            borderRadius: "4px",
-            marginBottom: "16px",
-          }}
-        >
-          {editError}
-        </div>
-      )}
+      {editError && <div style={profileModalStyles.error}>{editError}</div>}
 
       {editSuccess && (
-        <div
-          style={{
-            backgroundColor: "#DCFCE7",
-            color: "#166534",
-            padding: "10px 12px",
-            borderRadius: "4px",
-            marginBottom: "16px",
-          }}
-        >
-          {editSuccess}
-        </div>
+        <div style={profileModalStyles.sucess}>{editSuccess}</div>
       )}
 
       <form onSubmit={handleEditSubmit}>
@@ -168,7 +146,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
           />
         </div>
 
-        <div style={{ marginTop: "20px" }}>
+        <div>
           <button
             type="submit"
             style={{

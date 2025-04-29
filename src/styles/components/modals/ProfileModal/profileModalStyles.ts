@@ -136,7 +136,7 @@ export const profileModalStyles: Record<string, CSSProperties> = {
   },
 
   h3: {
-    fontFamily: '"Lexend-Medium", sans-serif',
+    fontFamily: '"Lexend-Regular", sans-serif',
     fontSize: "15px",
     color: "#374151",
   },
@@ -207,6 +207,7 @@ export const profileModalStyles: Record<string, CSSProperties> = {
   languageContainer: {
     display: "flex",
     alignItems: "center",
+    marginTop: "15px",
     marginBottom: "15px",
   },
 
@@ -242,5 +243,66 @@ export const profileModalStyles: Record<string, CSSProperties> = {
     fontSize: "13px",
     color: "#6B7280",
     fontFamily: '"Lexend-Regular", sans-serif',
+  },
+
+  info: {
+    marginTop: "30px",
+    padding: "12px",
+    backgroundColor: "#F3F4F6",
+    borderRadius: "4px",
+  },
+
+  error: {
+    backgroundColor: "#FEE2E2",
+    color: "#B91C1C",
+    padding: "10px 12px",
+    borderRadius: "4px",
+    marginBottom: "16px",
+  },
+
+  sucess: {
+    backgroundColor: "#DCFCE7",
+    color: "#166534",
+    padding: "10px 12px",
+    borderRadius: "4px",
+    marginBottom: "16px",
+  },
+
+  errorStateModalContainer: {
+    maxHeight: "85vh",
+    minHeight: "540px",
+  },
+
+  errorStateMainContent: {
+    minHeight: "450px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  errorStateBox: {
+    padding: "20px",
+    backgroundColor: "#FEF2F2",
+    borderRadius: "8px",
+    maxWidth: "400px",
+    textAlign: "center",
+  },
+
+  errorStateTitle: {
+    color: "#B91C1C",
+    marginBottom: "12px",
+  },
+
+  errorStateText: {
+    marginBottom: "16px",
+  },
+
+  errorStateButton: {
+    backgroundColor: "#3B82F6",
+    color: "white",
+    borderWidth: 0,
+    padding: "8px 16px",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
 };
