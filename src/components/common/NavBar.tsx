@@ -416,27 +416,39 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
       >
         <div
           style={navItemStyle(false)}
-          onClick={() => handleNavItemClick(`${navigation.baseRoute}/contacts`)}
+          onClick={() => {
+            if (localUserData?.role === "manager") {
+              navigation.navigateTo("/dashboard/manager/contacts");
+            } else {
+              handleNavItemClick(`${navigation.baseRoute}/contacts`);
+            }
+          }}
         >
           Contact
         </div>
         <div
           style={navItemStyle(true)}
-          onClick={() => handleNavItemClick(`${navigation.baseRoute}/clients`)}
+          onClick={() => {
+            if (localUserData?.role === "manager") {
+              navigation.navigateTo("/dashboard/manager/clients");
+            } else {
+              handleNavItemClick(`${navigation.baseRoute}/clients`);
+            }
+          }}
         >
           Client
+        </div>
+        <div
+          style={navItemStyle(false)}
+          onClick={() =>
+            handleNavItemClick(`${navigation.baseRoute}/opportunities`)
+          }
+        >
+          Opportunité
         </div>
         {(localUserData?.role === "admin" ||
           localUserData?.role === "manager") && (
           <>
-            <div
-              style={navItemStyle(false)}
-              onClick={() =>
-                handleNavItemClick(`${navigation.baseRoute}/opportunities`)
-              }
-            >
-              Opportunité
-            </div>
             <div
               style={navItemStyle(false)}
               onClick={() =>

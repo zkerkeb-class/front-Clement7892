@@ -8,57 +8,23 @@ export interface Client {
   name: string;
   description?: string;
   sector?: string;
+  email?: string;
+  phone?: string;
   address?: {
     street?: string;
     city?: string;
     zipCode?: string;
     country?: string;
   };
-  phone?: string;
-  email?: string;
-  logo?: string;
-  company: string; // Référence à l'entreprise propriétaire
-  team?: string; // Équipe responsable
+  company: string; // ID de l'entreprise propriétaire
   assignedTo?: string; // ID utilisateur responsable
-  goodForCustomer?: number; // Score de 0 à 100, défaut 50
-  contacts?: string[]; // IDs des contacts
-  opportunities?: string[]; // IDs des opportunités
+  team?: string; // ID de l'équipe responsable
+  goodForCustomer?: number;
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
-export interface ContactInput {
-  firstName: string;
-  lastName: string;
-  position?: string;
-  email?: string;
-  phone?: string;
-  mobile?: string;
-  isPrimary?: boolean;
-  notes?: string;
-}
 
-// Type étendu pour inclure les contacts lors de la création
-export interface ClientCreateInput {
-  name: string;
-  description?: string;
-  sector?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    zipCode?: string;
-    country?: string;
-  };
-  phone?: string;
-  email?: string;
-  logo?: string;
-  company: string;
-  team?: string;
-  assignedTo?: string;
-  goodForCustomer?: number;
-  isActive?: boolean;
-  contacts?: ContactInput[];
-}
 const headers = {
   "Content-Type": "application/json",
 };
@@ -88,7 +54,8 @@ export const getAllClients = async (): Promise<Client[]> => {
       );
     }
 
-    return await response.json();
+    const result = await response.json();
+    return result.data || [];
   } catch (error: any) {
     console.error("getAllClients error:", error);
     throw error;
@@ -142,7 +109,6 @@ export const getClientById = async (id: string): Promise<Client> => {
 /**
  * Récupère les clients par entreprise
  */
-// Modification de la fonction getClientsByCompany dans client.service.ts
 export const getClientsByCompany = async (
   companyId: string
 ): Promise<Client[]> => {
@@ -168,30 +134,13 @@ export const getClientsByCompany = async (
       );
     }
 
-    // Ajouter du debug pour voir la structure de la réponse
-    const data = await response.json();
-    console.log("Structure de la réponse API:", data);
-
-    // Vérifier si la réponse est directement un tableau ou si les données sont dans une propriété
-    if (Array.isArray(data)) {
-      return data;
-    } else if (data && Array.isArray(data.data)) {
-      return data.data;
-    } else if (data && typeof data === "object") {
-      // Chercher une propriété qui contient un tableau
-      const possibleArrayProps = Object.keys(data).find((key) =>
-        Array.isArray(data[key])
-      );
-      if (possibleArrayProps) {
-        return data[possibleArrayProps];
-      }
-    }
-
-    // Si nous arrivons ici, la structure n'est pas celle attendue
-    console.error("Structure de réponse inattendue:", data);
-    return []; // Retourner un tableau vide pour éviter les erreurs
+    const result = await response.json();
+    return result.data || [];
   } catch (error: any) {
-    console.error(`getClientsByCompany error for company ${companyId}:`, error);
+    console.error(
+      `getClientsByCompany error for company ${companyId}:`,
+      error
+    );
     throw error;
   }
 };

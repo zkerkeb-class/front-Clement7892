@@ -16,6 +16,7 @@ export const contactStyles = {
   },
   title: {
     fontSize: "var(--font-size-medium)",
+    margin: 0,
   },
   addButton: {
     padding: "10px 20px",
@@ -55,6 +56,11 @@ export const contactStyles = {
     borderRadius: "var(--border-small-radius)",
     cursor: "pointer",
   },
+  form: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "var(--spacing-normal)",
+  },
   formGroup: {
     marginBottom: "var(--spacing-normal)",
   },
@@ -69,6 +75,7 @@ export const contactStyles = {
   label: {
     display: "block",
     marginBottom: "var(--spacing-small)",
+    color: "var(--color-text)",
   },
   requiredField: {
     color: "var(--color-red)",
@@ -78,12 +85,75 @@ export const contactStyles = {
     padding: "10px",
     border: "var(--border-width) solid var(--color-grey-400)",
     borderRadius: "var(--border-small-radius)",
+    fontSize: "var(--font-size-normal)",
+    transition: "var(--animation-transition)",
+    "&:focus": {
+      borderColor: "var(--color-blue)",
+      outline: "none",
+    },
+  },
+  textarea: {
+    width: "100%",
+    padding: "10px",
+    border: "var(--border-width) solid var(--color-grey-400)",
+    borderRadius: "var(--border-small-radius)",
+    fontSize: "var(--font-size-normal)",
+    resize: "vertical" as const,
+    minHeight: "100px",
+    transition: "var(--animation-transition)",
+    "&:focus": {
+      borderColor: "var(--color-blue)",
+      outline: "none",
+    },
   },
   checkboxContainer: {
     display: "flex",
     alignItems: "center",
+    gap: "var(--spacing-small)",
+    cursor: "pointer",
   },
   checkbox: {
-    marginRight: "var(--spacing-small)",
+    width: "18px",
+    height: "18px",
+    cursor: "pointer",
+  },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "var(--spacing-normal)",
+    marginTop: "var(--spacing-normal)",
+  },
+  submitButton: {
+    padding: "10px 20px",
+    backgroundColor: "var(--color-blue)",
+    color: "var(--color-white)",
+    border: "none",
+    borderRadius: "var(--border-small-radius)",
+    cursor: "pointer",
+    fontSize: "var(--font-size-normal)",
+    fontWeight: "var(--font-weight-medium)",
+    transition: "var(--animation-transition)",
+    "&:hover": {
+      backgroundColor: "var(--color-blue-dark)",
+    },
+  },
+  errorMessage: {
+    backgroundColor: "var(--color-error-light)",
+    color: "var(--color-error-dark)",
+    padding: "var(--spacing-normal)",
+    borderRadius: "var(--border-small-radius)",
+    marginBottom: "var(--spacing-normal)",
+  },
+  successMessage: {
+    backgroundColor: "var(--color-success-light)",
+    color: "var(--color-success-dark)",
+    padding: "var(--spacing-normal)",
+    borderRadius: "var(--border-small-radius)",
+    marginBottom: "var(--spacing-normal)",
+  },
+  loadingMessage: {
+    textAlign: "center" as const,
+    padding: "var(--spacing-big)",
+    color: "var(--color-grey-600)",
   },
 };
