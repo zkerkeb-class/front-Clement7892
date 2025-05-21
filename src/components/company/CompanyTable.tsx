@@ -7,6 +7,8 @@ import ActionButton from "@/components/common/ActionButton";
 import ToggleCompanyStatus from "@/components/company/ToggleCompanyStatus";
 import { Company } from "@/services/company.service";
 import { tableStyleProps } from "@/styles/components/tableStyles";
+import { useAuth } from "@/contexts/AuthContext";
+import { getRoutePrefix } from "@/utils/getRoutePrefix";
 
 interface CompanyTableProps {
   companies: Company[];
@@ -20,6 +22,7 @@ const CompanyTable: React.FC<CompanyTableProps> = ({
   onStatusChange,
 }) => {
   const router = useRouter();
+  const { user } = useAuth(); // Récupération de l'utilisateur connecté
 
   // Formatage de la date de création
   const formatDate = (dateString?: string) => {
@@ -70,38 +73,54 @@ const CompanyTable: React.FC<CompanyTableProps> = ({
     },
     {
       header: "Actions",
-      accessor: (company) => (
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-          <ActionButton
-            onClick={() =>
-              router.push(
-                `/dashboard/admin/manage/company/edit/${company._id}`
-              )
-            }
-            variant="secondary"
-            size="medium"
+      accessor: (company) => {
+        // Utiliser la fonction getRoutePrefix importée
+        const routePrefix = getRoutePrefix(user?.role);
+        return (
+          <div
+            style={{ display: "flex", justifyContent: "center", gap: "10px" }}
           >
-            Éditer
-          </ActionButton>
-          <ActionButton
-            onClick={() =>
-              router.push(
-                `/dashboard/admin/manage/company/teams/${company._id}`
-              )
-            }
-            size="medium"
-          >
-            Équipes
-          </ActionButton>
-          <ToggleCompanyStatus
-            companyId={company._id}
-            isActive={company.isActive}
-            onStatusChange={(newStatus) =>
-              onStatusChange(company._id, newStatus)
-            }
-          />
-        </div>
-      ),
+            <ActionButton
+              onClick={() =>
+                router.push(
+                  `/dashboard/${routePrefix}/manage/company/edit/${company._id}`
+                )
+              }
+              variant="secondary"
+              size="medium"
+            >
+              Éditer
+            </ActionButton>
+            <ActionButton
+              onClick={() =>
+                router.push(
+                  `/dashboard/${routePrefix}/manage/company/teams/${company._id}`
+                )
+              }
+              size="medium"
+            >
+              Équipes
+            </ActionButton>
+            <ActionButton
+              onClick={() =>
+                router.push(
+                  `/dashboard/${routePrefix}/manage/company/clients/${company._id}`
+                )
+              }
+              size="medium"
+            >
+              Clients
+            </ActionButton>
+            <ToggleCompanyStatus
+              companyId={company._id}
+              isActive={company.isActive}
+              onStatusChange={(newStatus) =>
+                onStatusChange(company._id, newStatus)
+              }
+            />
+          </div>
+        );
+      },
       align: "center",
       isAction: true,
     },

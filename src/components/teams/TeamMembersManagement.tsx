@@ -1,153 +1,91 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import {
-  getTeamById,
-  updateTeam,
-  addMemberToTeam,
-  removeMemberFromTeam,
-  Team,
-} from "@/services/team.service";
-import { getCompanyById, Company } from "@/services/company.service";
-import { getAllUsers, User } from "@/services/user.service";
+import React, { use, useEffect } from "react";
 import ActionButton from "@/components/common/ActionButton";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTeamMembers } from "@/hooks/useTeamMembers";
+import { useTeamAccess } from "@/hooks/useTeamAccess";
 
 interface TeamMembersManagementProps {
-  params: {
+  params: Promise<{
     companyId: string;
-    teamId: string;
-  };
+    teamsId: string;
+  }>;
 }
 
 const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
   params,
 }) => {
-  const { companyId, teamId } = params;
-  const router = useRouter();
-  const { user, isLoading, setLoadingWithMessage } = useAuth();
-  const [company, setCompany] = useState<Company | null>(null);
-  const [team, setTeam] = useState<Team | null>(null);
-  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
-  const [teamMembers, setTeamMembers] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [isLoadingData, setIsLoadingData] = useState(false);
+  // Utilisation de React.use() pour déballer les paramètres
+  const unwrappedParams = use(params);
+  const companyId = unwrappedParams.companyId;
+  const teamsId = unwrappedParams.teamsId;
 
+  // Logging pour debugger
+  console.log("TeamMembersManagement - Params déballés:", {
+    companyId,
+    teamsId,
+  });
+
+  const { setLoadingWithMessage } = useAuth();
+
+  // Hook pour vérifier les permissions et les routes
+  const {
+    user,
+    isLoading,
+    hasValidAccess,
+    hasValidParams,
+    navigateToTeamsList,
+    navigateToDashboard,
+  } = useTeamAccess({ companyId, teamId: teamsId });
+
+  // Hook pour la gestion des membres de l'équipe
+  const {
+    company,
+    team,
+    availableUsers,
+    teamMembers,
+    selectedUserId,
+    setSelectedUserId,
+    error,
+    success,
+    isLoadingData,
+    loadTeamData,
+    handleAddMember,
+    handleRemoveMember,
+  } = useTeamMembers({
+    companyId,
+    teamId: teamsId,
+    setLoadingWithMessage,
+  });
+
+  // Charger les données quand le composant est initialisé et que l'utilisateur a les permissions
   useEffect(() => {
-    // Vérification du rôle admin ou manager
-    if (!isLoading && user && !["admin", "manager"].includes(user.role)) {
-      router.push("/dashboard");
+    if (hasValidAccess) {
+      loadTeamData();
     }
-  }, [user, isLoading, router]);
+  }, [companyId, teamsId, user]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoadingData(true);
-      try {
-        // Récupérer les données de l'entreprise
-        const companyData = await getCompanyById(companyId);
-        setCompany(companyData);
-
-        // Récupérer les données de l'équipe
-        const teamData = await getTeamById(teamId);
-        setTeam(teamData);
-
-        // Récupérer tous les utilisateurs
-        const usersData = await getAllUsers();
-
-        // Si les membres de l'équipe sont des IDs, récupérer les objets User correspondants
-        let memberIds: string[] = [];
-        if (teamData.members) {
-          if (typeof teamData.members[0] === "string") {
-            memberIds = teamData.members as string[];
-          } else {
-            memberIds = (teamData.members as User[]).map(
-              (member) => member._id
-            );
-          }
-        }
-
-        // Filtrer les utilisateurs qui ne sont pas déjà membres
-        const teamMembersArray = usersData.filter((user) =>
-          memberIds.includes(user._id)
-        );
-        setTeamMembers(teamMembersArray);
-
-        const availableUsersArray = usersData.filter(
-          (user) => !memberIds.includes(user._id)
-        );
-        setAvailableUsers(availableUsersArray);
-
-        setError(null);
-      } catch (err: any) {
-        console.error("Erreur lors de la récupération des données:", err);
-        setError("Impossible de charger les données nécessaires.");
-      } finally {
-        setIsLoadingData(false);
-      }
-    };
-
-    if (user && ["admin", "manager"].includes(user.role)) {
-      fetchData();
-    }
-  }, [companyId, teamId, user]);
-
-  const handleAddMember = async () => {
-    if (!selectedUserId) {
-      setError("Veuillez sélectionner un utilisateur à ajouter.");
-      return;
-    }
-
-    setLoadingWithMessage(true, "Ajout du membre à l'équipe...");
-    try {
-      await addMemberToTeam(teamId, selectedUserId);
-
-      // Mettre à jour les listes d'utilisateurs
-      const selectedUser = availableUsers.find((u) => u._id === selectedUserId);
-      if (selectedUser) {
-        setTeamMembers([...teamMembers, selectedUser]);
-        setAvailableUsers(
-          availableUsers.filter((u) => u._id !== selectedUserId)
-        );
-      }
-
-      setSelectedUserId("");
-      setSuccess("Membre ajouté avec succès");
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err: any) {
-      console.error("Erreur lors de l'ajout du membre:", err);
-      setError("Une erreur est survenue lors de l'ajout du membre");
-    } finally {
-      setLoadingWithMessage(false);
-    }
-  };
-
-  const handleRemoveMember = async (userId: string) => {
-    setLoadingWithMessage(true, "Retrait du membre de l'équipe...");
-    try {
-      await removeMemberFromTeam(teamId, userId);
-
-      // Mettre à jour les listes d'utilisateurs
-      const removedUser = teamMembers.find((u) => u._id === userId);
-      if (removedUser) {
-        setAvailableUsers([...availableUsers, removedUser]);
-        setTeamMembers(teamMembers.filter((u) => u._id !== userId));
-      }
-
-      setSuccess("Membre retiré avec succès");
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err: any) {
-      console.error("Erreur lors du retrait du membre:", err);
-      setError("Une erreur est survenue lors du retrait du membre");
-    } finally {
-      setLoadingWithMessage(false);
-    }
-  };
-
+  // Gestion des cas de chargement ou d'erreur
   if (isLoading || !user) {
     return null; // Le LoadingOverlay du AuthContext s'affichera
+  }
+
+  if (!hasValidParams) {
+    return (
+      <div style={{ padding: "20px", color: "#d32f2f" }}>
+        <h2>Erreur</h2>
+        <p>
+          Paramètres manquants. Impossible de charger les détails de l'équipe.
+        </p>
+        <ActionButton
+          onClick={navigateToDashboard}
+          variant="secondary"
+          size="medium"
+        >
+          Retour au tableau de bord
+        </ActionButton>
+      </div>
+    );
   }
 
   return (
@@ -172,9 +110,7 @@ const TeamMembersManagement: React.FC<TeamMembersManagementProps> = ({
           )}
         </div>
         <button
-          onClick={() =>
-            router.push(`/dashboard/admin/manage/company/teams/${companyId}`)
-          }
+          onClick={navigateToTeamsList}
           style={{
             padding: "10px 16px",
             backgroundColor: "#f5f5f5",

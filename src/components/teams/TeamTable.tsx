@@ -1,4 +1,4 @@
-"use client";
+// /components/teams/TeamTable.tsx
 import React from "react";
 import { useRouter } from "next/navigation";
 import Table, { TableColumn } from "@/components/common/Table";
@@ -7,6 +7,7 @@ import ActionButton from "@/components/common/ActionButton";
 import ToggleTeamStatus from "@/components/teams/ToggleTeamStatus";
 import { Team } from "@/services/team.service";
 import { tableStyleProps } from "@/styles/components/tableStyles";
+import { useTeamTable } from "@/hooks/useTeamTable";
 
 interface TeamTableProps {
   teams: Team[];
@@ -23,16 +24,9 @@ const TeamTable: React.FC<TeamTableProps> = ({
 }) => {
   const router = useRouter();
 
-  // Formatage de la date de création
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "Non disponible";
-    const date = new Date(dateString);
-    return date.toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
+  // Utilisation du hook personnalisé
+  const { loadingLeaders, getLeaderName, formatDate, getRoutePrefix } =
+    useTeamTable({ teams });
 
   const columns: TableColumn<Team>[] = [
     {
@@ -52,12 +46,7 @@ const TeamTable: React.FC<TeamTableProps> = ({
     },
     {
       header: "Leader",
-      accessor: (team) => {
-        if (team.leader && typeof team.leader === "object") {
-          return `${team.leader.firstName} ${team.leader.lastName}`;
-        }
-        return "Non assigné";
-      },
+      accessor: getLeaderName,
       align: "left",
     },
     {
@@ -72,36 +61,45 @@ const TeamTable: React.FC<TeamTableProps> = ({
     },
     {
       header: "Actions",
-      accessor: (team) => (
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-          <ActionButton
-            onClick={() =>
-              router.push(
-                `/dashboard/admin/manage/company/teams/${companyId}/edit/${team._id}`
-              )
-            }
-            variant="secondary"
-            size="medium"
+      accessor: (team) => {
+        const routePrefix = getRoutePrefix();
+
+        return (
+          <div
+            style={{ display: "flex", justifyContent: "center", gap: "10px" }}
           >
-            Éditer
-          </ActionButton>
-          <ActionButton
-            onClick={() =>
-              router.push(
-                `/dashboard/admin/manage/company/teams/${companyId}/members/${team._id}`
-              )
-            }
-            size="medium"
-          >
-            Membres
-          </ActionButton>
-          <ToggleTeamStatus
-            teamId={team._id}
-            isActive={team.isActive}
-            onStatusChange={(newStatus) => onStatusChange(team._id, newStatus)}
-          />
-        </div>
-      ),
+            <ActionButton
+              onClick={() =>
+                router.push(
+                  `/dashboard/${routePrefix}/manage/company/teams/${companyId}/edit/${team._id}`
+                )
+              }
+              variant="secondary"
+              size="medium"
+            >
+              Éditer
+            </ActionButton>
+            <ActionButton
+              onClick={() =>
+                router.push(
+                  `/dashboard/${routePrefix}/manage/company/teams/${companyId}/members/${team._id}`
+                )
+              }
+              size="medium"
+            >
+              Membres
+            </ActionButton>
+
+            <ToggleTeamStatus
+              teamId={team._id}
+              isActive={team.isActive}
+              onStatusChange={(newStatus) =>
+                onStatusChange(team._id, newStatus)
+              }
+            />
+          </div>
+        );
+      },
       align: "center",
       isAction: true,
     },
@@ -121,7 +119,7 @@ const TeamTable: React.FC<TeamTableProps> = ({
       data={teams}
       columns={columns}
       keyField="_id"
-      isLoading={isLoading}
+      isLoading={isLoading || loadingLeaders}
       emptyMessage="Aucune équipe trouvée pour cette entreprise"
       styleProps={customTableStyles}
     />

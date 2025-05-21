@@ -1,116 +1,150 @@
-"use client";
-import React from "react";
-import { useRouter } from "next/navigation";
-import Table, { TableColumn } from "@/components/common/Table";
-import StatusBadge from "@/components/common/StatusBadge";
+import React, { useState } from "react";
+import { adminDashboardStyles as styles } from "@/styles/pages/dashboard/admin/adminDashboardStyles";
+import { FaSearch, FaEye, FaEllipsisH, FaUserShield } from "react-icons/fa";
 import ActionButton from "@/components/common/ActionButton";
-import ToggleUserStatus from "@/components/admin/users/ToggleUserStatus";
-import { User } from "@/services/user.service";
-import { tableStyleProps } from "@/styles/components/tableStyles";
 
-interface UserTableProps {
-  users: User[];
-  isLoading: boolean;
-  onStatusChange: (userId: string, newStatus: boolean) => void;
+interface UsersTableProps {
+  users: any[];
+  maxDisplayed?: number;
+  navigateToUserDetails: (userId: string) => void;
+  navigateToUserManagement: () => void;
+  showViewMore?: boolean;
+  searchEnabled?: boolean;
 }
 
-const UserTable: React.FC<UserTableProps> = ({
+const UsersTable: React.FC<UsersTableProps> = ({
   users,
-  isLoading,
-  onStatusChange,
+  maxDisplayed = Infinity,
+  navigateToUserDetails,
+  navigateToUserManagement,
+  showViewMore = false,
+  searchEnabled = true,
 }) => {
-  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Formatage de la date de dernière connexion
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "Jamais";
-    const date = new Date(dateString);
-    return date.toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // Filtrer les utilisateurs en fonction de la recherche
+  const filteredUsers = searchQuery
+    ? users.filter(
+        (user) =>
+          user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.role.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : users;
 
-  const columns: TableColumn<User>[] = [
-    {
-      header: "Nom",
-      accessor: (user) => `${user.firstName} ${user.lastName}`,
-      align: "left",
-    },
-    {
-      header: "Email",
-      accessor: "email",
-      align: "left",
-    },
-    {
-      header: "Rôle",
-      accessor: (user) => (
-        <span style={{ textTransform: "capitalize" }}>{user.role}</span>
-      ),
-      align: "left",
-    },
-    {
-      header: "Téléphone",
-      accessor: (user) => user.phoneNumber || "Non renseigné",
-      align: "left",
-    },
-    {
-      header: "Statut",
-      accessor: (user) => <StatusBadge isActive={user.active} />,
-      align: "center",
-    },
-    {
-      header: "Dernière connexion",
-      accessor: (user) => formatDate(user.lastLogin),
-      align: "left",
-    },
-    {
-      header: "Actions",
-      accessor: (user) => (
-        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-          <ActionButton
-            onClick={() =>
-              router.push(`/dashboard/admin/manage/users/edit/${user._id}`)
-            }
-            variant="secondary"
-            size="medium"
-          >
-            Éditer
-          </ActionButton>
-          <ToggleUserStatus
-            userId={user._id}
-            isActive={user.active}
-            onStatusChange={(newStatus) => onStatusChange(user._id, newStatus)}
-          />
-        </div>
-      ),
-      align: "center",
-      isAction: true,
-    },
-  ];
+  // Limiter le nombre d'utilisateurs affichés
+  const displayedUsers = filteredUsers.slice(0, maxDisplayed);
 
-  // Utiliser les styles configurés
-  const customTableStyles = {
-    ...tableStyleProps,
-    variant: "striped" as const,
-    headerStyle: "light" as const,
-    rounded: true,
-    maxWidth: "1200px",
+  // Fonction pour obtenir la couleur du badge en fonction du rôle
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "var(--color-red)"; // Rouge
+      case "manager":
+        return "var(--color-blue)"; // Bleu
+      default:
+        return "var(--color-green)"; // Vert
+    }
   };
 
   return (
-    <Table
-      data={users}
-      columns={columns}
-      keyField="_id"
-      isLoading={isLoading}
-      emptyMessage="Aucun utilisateur trouvé"
-      styleProps={customTableStyles}
-    />
+    <>
+      {searchEnabled && (
+        <div style={styles.searchInputContainer}>
+          <FaSearch style={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            style={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      )}
+
+      {filteredUsers.length === 0 ? (
+        <div style={styles.emptyState}>
+          <p>
+            Aucun utilisateur{" "}
+            {searchQuery ? "trouvé" : "enregistré dans le système"}.
+          </p>
+        </div>
+      ) : (
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th style={styles.tableHeader}>Nom</th>
+              <th style={styles.tableHeader}>Email</th>
+              <th style={styles.tableHeader}>Rôle</th>
+              <th style={styles.tableHeader}>Statut</th>
+              <th style={styles.tableHeader}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedUsers.map((user) => (
+              <tr key={user._id} style={styles.tableRow}>
+                <td style={styles.tableCell}>
+                  {user.firstName} {user.lastName}
+                </td>
+                <td style={styles.tableCell}>{user.email}</td>
+                <td style={styles.tableCell}>
+                  <span
+                    style={{
+                      ...styles.roleBadge,
+                      backgroundColor: getRoleBadgeColor(user.role),
+                    }}
+                  >
+                    {user.role}
+                  </span>
+                </td>
+                <td style={styles.tableCell}>
+                  <span
+                    style={{
+                      ...styles.statusBadge,
+                      backgroundColor: user.active ? "#4caf50" : "#f44336",
+                    }}
+                  >
+                    {user.active ? "Actif" : "Inactif"}
+                  </span>
+                </td>
+                <td style={styles.tableCellActions}>
+                  <ActionButton
+                    onClick={() => navigateToUserDetails(user._id)}
+                    variant="secondary"
+                    size="small"
+                  >
+                    <FaEye style={{ marginRight: "5px" }} />
+                    Détails
+                  </ActionButton>
+                </td>
+              </tr>
+            ))}
+            {showViewMore && filteredUsers.length > maxDisplayed && (
+              <tr style={styles.viewMoreRow}>
+                <td colSpan={5} style={styles.viewMoreCell}>
+                  <div style={styles.viewMoreContent}>
+                    <FaEllipsisH style={{ marginRight: "10px" }} />
+                    <span>
+                      Voir {filteredUsers.length - maxDisplayed} autres
+                      utilisateurs
+                    </span>
+                    <ActionButton
+                      onClick={navigateToUserManagement}
+                      variant="secondary"
+                      size="small"
+                    >
+                      Voir tout
+                    </ActionButton>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
+    </>
   );
 };
 
-export default UserTable;
+export default UsersTable;
