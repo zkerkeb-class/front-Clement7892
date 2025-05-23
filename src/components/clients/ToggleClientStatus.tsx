@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ActionButton from "@/components/common/ActionButton";
-import { updateClient } from "@/services/client.service";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
 interface ToggleClientStatusProps {
   clientId: string;
@@ -13,29 +13,37 @@ const ToggleClientStatus: React.FC<ToggleClientStatusProps> = ({
   isActive,
   onStatusChange,
 }) => {
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const toggleStatus = async () => {
-    setIsUpdating(true);
+  const handleToggle = async () => {
     try {
-      await updateClient(clientId, { isActive: !isActive });
-      onStatusChange(!isActive);
+      setIsLoading(true);
+      await onStatusChange(!isActive);
     } catch (error) {
       console.error("Erreur lors du changement de statut:", error);
-      alert("Erreur lors de la mise à jour du statut du client");
     } finally {
-      setIsUpdating(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <ActionButton
-      onClick={toggleStatus}
-      variant={isActive ? "warning" : "success"}
+      onClick={handleToggle}
+      variant={isActive ? "success" : "danger"}
       size="medium"
-      disabled={isUpdating}
+      disabled={isLoading}
     >
-      {isUpdating ? "Mise à jour..." : isActive ? "Désactiver" : "Activer"}
+      {isActive ? (
+        <>
+          <FaCheck style={{ marginRight: "8px" }} />
+          Actif
+        </>
+      ) : (
+        <>
+          <FaTimes style={{ marginRight: "8px" }} />
+          Inactif
+        </>
+      )}
     </ActionButton>
   );
 };

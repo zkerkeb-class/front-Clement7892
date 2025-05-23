@@ -1,21 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Table, { TableColumn } from "@/components/common/Table";
 import StatusBadge from "@/components/common/StatusBadge";
 import ActionButton from "@/components/common/ActionButton";
-import ToggleClientStatus from "@/components/clients/ToogleClientStatus";
-import { Client } from "@/services/client.service";
+import ToggleClientStatus from "@/components/clients/ToggleClientStatus";
+import DeleteClientModal from "@/components/clients/DeleteClientModal";
+import { Client, deleteClient } from "@/services/client.service";
 import { tableStyleProps } from "@/styles/components/tableStyles";
 import { useAssignedUsers } from "@/hooks/useAssignedUsers";
 import { useRoutePrefix } from "@/hooks/useRoutePrefix";
 import { useDateFormatterFr } from "@/hooks/useDateFormatter";
 import { useAuth } from "@/contexts/AuthContext";
+import { FaTrash } from "react-icons/fa";
 
 interface ClientTableProps {
   clients: Client[];
   companyId: string;
   isLoading: boolean;
-  onStatusChange: (clientId: string, newStatus: boolean) => void;
+  onStatusChange?: (clientId: string, newStatus: boolean) => void;
 }
 
 const ClientTable: React.FC<ClientTableProps> = ({
@@ -26,6 +28,9 @@ const ClientTable: React.FC<ClientTableProps> = ({
 }) => {
   const router = useRouter();
   const { user } = useAuth();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
 
   // Utilisation des hooks personnalisés
   const routePrefix = useRoutePrefix();
@@ -66,6 +71,33 @@ const ClientTable: React.FC<ClientTableProps> = ({
           return `/dashboard/${routePrefix}/manage/company/clients/${companyId}/${clientId}`;
       }
     }
+  };
+
+  const handleDeleteClick = (client: Client) => {
+    setClientToDelete(client);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!clientToDelete) return;
+
+    try {
+      setDeletingId(clientToDelete._id);
+      await deleteClient(clientToDelete._id);
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur lors de la suppression du client:", error);
+      alert("Une erreur est survenue lors de la suppression du client");
+    } finally {
+      setDeletingId(null);
+      setShowDeleteModal(false);
+      setClientToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setClientToDelete(null);
   };
 
   const columns: TableColumn<Client>[] = [
@@ -128,6 +160,15 @@ const ClientTable: React.FC<ClientTableProps> = ({
             >
               Attribuer
             </ActionButton>
+            <ActionButton
+              onClick={() => handleDeleteClick(client)}
+              variant="danger"
+              size="medium"
+              disabled={deletingId === client._id}
+            >
+              <FaTrash style={{ marginRight: "8px" }} />
+              {deletingId === client._id ? "Suppression..." : "Supprimer"}
+            </ActionButton>
           </div>
         );
       },
@@ -146,16 +187,25 @@ const ClientTable: React.FC<ClientTableProps> = ({
   };
 
   return (
-    <Table
-      data={clients}
-      columns={columns}
-      keyField="_id"
-      isLoading={isLoading || loadingUsers}
-      emptyMessage="Aucun client trouvé pour cette entreprise"
-      styleProps={customTableStyles}
-      pagination={true}
-      defaultItemsPerPage={10}
-    />
+    <>
+      <Table
+        data={clients}
+        columns={columns}
+        keyField="_id"
+        isLoading={isLoading || loadingUsers}
+        emptyMessage="Aucun client trouvé pour cette entreprise"
+        styleProps={customTableStyles}
+        pagination={true}
+        defaultItemsPerPage={10}
+      />
+      {showDeleteModal && clientToDelete && (
+        <DeleteClientModal
+          clientName={clientToDelete.name}
+          onCancel={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+        />
+      )}
+    </>
   );
 };
 

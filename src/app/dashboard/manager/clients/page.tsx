@@ -120,7 +120,9 @@ const ManagerClientList: React.FC = () => {
           </ActionButton>
           <ActionButton
             onClick={() =>
-              router.push(`/dashboard/manager/clients/add/${company._id}`)
+              router.push(
+                `/dashboard/manager/manage/company/clients/${company._id}/add`
+              )
             }
             variant="primary"
             size="large"

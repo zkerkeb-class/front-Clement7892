@@ -1,7 +1,7 @@
 import React from "react";
-import { clientDetailsStyles as styles } from "@/styles/pages/dashboard/admin/clientDetailsStyles";
-import { FaTrashAlt } from "react-icons/fa";
 import ActionButton from "@/components/common/ActionButton";
+import { FaTrashAlt } from "react-icons/fa";
+import { clientDetailsStyles as styles } from "@/styles/pages/dashboard/admin/clientDetailsStyles";
 
 interface DeleteClientModalProps {
   clientName: string;
@@ -21,18 +21,26 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
           <h3 style={styles.modalTitle}>Confirmer la suppression</h3>
           <p style={styles.modalText}>
             Êtes-vous sûr de vouloir supprimer le client{" "}
-            <strong>{clientName}</strong> ? Cette action ne peut pas être
-            annulée.
+            <strong>{clientName}</strong> ?
           </p>
-        </div>
-        <div style={styles.modalActions}>
-          <ActionButton onClick={onCancel} variant="secondary" size="medium">
-            Annuler
-          </ActionButton>
-          <ActionButton onClick={onConfirm} variant="danger" size="medium">
-            <FaTrashAlt style={{ marginRight: "8px" }} />
-            Supprimer
-          </ActionButton>
+          <p
+            style={{
+              color: "var(--color-error-dark)",
+              marginTop: "var(--spacing-small)",
+            }}
+          >
+            Cette action est irréversible et supprimera également tous les
+            contacts associés.
+          </p>
+          <div style={styles.modalActions}>
+            <ActionButton onClick={onCancel} variant="secondary" size="medium">
+              Annuler
+            </ActionButton>
+            <ActionButton onClick={onConfirm} variant="danger" size="medium">
+              <FaTrashAlt style={{ marginRight: "8px" }} />
+              Supprimer
+            </ActionButton>
+          </div>
         </div>
       </div>
     </div>

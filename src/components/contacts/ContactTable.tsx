@@ -14,8 +14,9 @@ import { useContactClients } from "@/hooks/useContactClients";
 
 interface ContactTableProps {
   contacts: Contact[];
-  companyId: string;
+  companyId?: string;
   isLoading: boolean;
+  isAdmin?: boolean;
   onStatusChange?: (contactId: string, newStatus: boolean) => void;
 }
 
@@ -23,6 +24,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
   contacts,
   companyId,
   isLoading,
+  isAdmin = false,
   onStatusChange,
 }) => {
   const router = useRouter();

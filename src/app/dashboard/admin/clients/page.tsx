@@ -3,17 +3,26 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRoleCheck } from "@/hooks/useRoleCheck";
 import { Client, getAllClients } from "@/services/client.service";
-import { adminStyles as styles } from "@/styles/pages/dashboard/admin/adminStyles";
+import ClientTable from "@/components/clients/ClientTable";
 import ActionButton from "@/components/common/ActionButton";
-import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
+import { useClient } from "@/hooks/useClient";
 
-export default function AdminClientsPage() {
+const AdminClientsPage: React.FC = () => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading: isLoadingAuth } = useAuth();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Vérification des droits d'accès (admin)
+  const hasAccess = useRoleCheck({
+    isLoading: isLoadingAuth,
+    user,
+    requiredRole: ["admin"],
+    redirectPath: "/dashboard",
+  });
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -28,99 +37,68 @@ export default function AdminClientsPage() {
       }
     };
 
-    fetchClients();
-  }, []);
-
-  const handleEdit = (clientId: string) => {
-    router.push(`/dashboard/admin/clients/edit/${clientId}`);
-  };
-
-  const handleView = (clientId: string) => {
-    router.push(`/dashboard/admin/clients/${clientId}`);
-  };
-
-  const handleDelete = async (clientId: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
-      try {
-        // Appel à la fonction de suppression
-        // await deleteClient(clientId);
-        setClients(clients.filter(client => client._id !== clientId));
-      } catch (err) {
-        setError("Erreur lors de la suppression du client");
-        console.error("Erreur:", err);
-      }
+    if (hasAccess) {
+      fetchClients();
     }
-  };
+  }, [hasAccess]);
 
-  if (loading) {
-    return <div style={styles.loadingMessage}>Chargement des clients...</div>;
+  if (isLoadingAuth || !hasAccess) {
+    return null; // Le LoadingOverlay du AuthContext s'affichera
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: "20px", color: "#d32f2f" }}>
+        <h2>Erreur</h2>
+        <p>{error}</p>
+        <ActionButton
+          onClick={() => window.location.reload()}
+          variant="secondary"
+          size="medium"
+        >
+          Réessayer
+        </ActionButton>
+      </div>
+    );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Gestion des Clients</h1>
-        <ActionButton
-          onClick={() => router.push("/dashboard/admin/clients/add")}
-          variant="primary"
-          size="medium"
-        >
-          <FaPlus /> Nouveau Client
-        </ActionButton>
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: "24px", marginBottom: "8px" }}>
+            Gestion des clients
+          </h1>
+          <p style={{ color: "#666" }}>Administration de tous les clients</p>
+        </div>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <ActionButton
+            onClick={() => router.push("/dashboard")}
+            variant="secondary"
+            size="medium"
+          >
+            Retour au tableau de bord
+          </ActionButton>
+          <ActionButton
+            onClick={() => router.push("/dashboard/admin/clients/add")}
+            variant="primary"
+            size="large"
+          >
+            Ajouter un client
+          </ActionButton>
+        </div>
       </div>
 
-      {error && <div style={styles.errorMessage}>{error}</div>}
-
-      <div style={styles.tableContainer}>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Nom</th>
-              <th style={styles.th}>Secteur</th>
-              <th style={styles.th}>Email</th>
-              <th style={styles.th}>Téléphone</th>
-              <th style={styles.th}>Ville</th>
-              <th style={styles.th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {clients.map((client) => (
-              <tr key={client._id}>
-                <td style={styles.td}>{client.name}</td>
-                <td style={styles.td}>{client.sector || "-"}</td>
-                <td style={styles.td}>{client.email || "-"}</td>
-                <td style={styles.td}>{client.phone || "-"}</td>
-                <td style={styles.td}>{client.address?.city || "-"}</td>
-                <td style={styles.td}>
-                  <div style={styles.actionButtons}>
-                    <ActionButton
-                      onClick={() => handleView(client._id)}
-                      variant="primary"
-                      size="small"
-                    >
-                      <FaEye />
-                    </ActionButton>
-                    <ActionButton
-                      onClick={() => handleEdit(client._id)}
-                      variant="secondary"
-                      size="small"
-                    >
-                      <FaEdit />
-                    </ActionButton>
-                    <ActionButton
-                      onClick={() => handleDelete(client._id)}
-                      variant="danger"
-                      size="small"
-                    >
-                      <FaTrash />
-                    </ActionButton>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ClientTable clients={clients} companyId="admin" isLoading={loading} />
     </div>
   );
-} 
+};
+
+export default AdminClientsPage;

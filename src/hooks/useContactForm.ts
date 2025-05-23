@@ -117,6 +117,7 @@ export const useContactForm = (companyId: string, contactId?: string) => {
         notes: formData.notes?.trim() || undefined,
         company: companyId,
         isActive: true,
+        client: companyId,
       };
 
       // Validation des données
