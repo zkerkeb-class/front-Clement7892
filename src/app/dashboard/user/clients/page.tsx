@@ -12,7 +12,6 @@ const ClientList: React.FC = () => {
   const router = useRouter();
   const { user, isLoading: isLoadingAuth } = useAuth();
 
-  // Vérification des droits d'accès (user)
   const hasAccess = useRoleCheck({
     isLoading: isLoadingAuth,
     user,
@@ -20,14 +19,12 @@ const ClientList: React.FC = () => {
     redirectPath: "/dashboard",
   });
 
-  // Récupération des données du dashboard utilisateur
   const {
     dashboardData,
     loading: isLoadingDashboard,
     error: dashboardError,
   } = useUserDashboard();
 
-  // Récupération des clients de l'entreprise
   const {
     clients,
     isLoading: isLoadingClients,
@@ -35,16 +32,14 @@ const ClientList: React.FC = () => {
     updateClientData,
   } = useClient({ companyId: dashboardData?.company?._id });
 
-  // Gestionnaire pour le changement de statut d'un client
   const handleStatusChange = (clientId: string, newStatus: boolean) => {
     updateClientData(clientId, { isActive: newStatus });
   };
 
   if (isLoadingAuth || isLoadingDashboard || !hasAccess) {
-    return null; // Le LoadingOverlay du AuthContext s'affichera
+    return null;
   }
 
-  // Affichage des erreurs
   const error = dashboardError || clientsError;
   if (error) {
     return (
@@ -62,7 +57,6 @@ const ClientList: React.FC = () => {
     );
   }
 
-  // Si l'utilisateur n'a pas d'entreprise associée
   if (!dashboardData?.company) {
     return (
       <div style={{ padding: "20px" }}>
@@ -88,11 +82,20 @@ const ClientList: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "20px",
+          marginBottom: "40px",
         }}
       >
         <div>
-          <h1 style={{ fontSize: "24px", marginBottom: "8px" }}>Mes clients</h1>
+          <h1
+            style={{
+              fontSize: "50px",
+              marginBottom: "8px",
+              color: "#333333",
+              fontFamily: "var(--font-first)",
+            }}
+          >
+            Clients
+          </h1>
           <p style={{ color: "#666" }}>
             Entreprise: <strong>{company.name}</strong>
           </p>
@@ -102,8 +105,10 @@ const ClientList: React.FC = () => {
             onClick={() => router.push("/dashboard")}
             variant="secondary"
             size="medium"
+            customTextColor="#A3B18A"
+            customBorderColor="#A3B18A"
           >
-            Retour au tableau de bord
+            Importer
           </ActionButton>
           <ActionButton
             onClick={() =>
@@ -111,6 +116,7 @@ const ClientList: React.FC = () => {
             }
             variant="primary"
             size="large"
+            customColor="#A3B18A"
           >
             Ajouter un client
           </ActionButton>

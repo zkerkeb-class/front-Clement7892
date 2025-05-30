@@ -12,7 +12,6 @@ const ContactList: React.FC = () => {
   const router = useRouter();
   const { user, isLoading: isLoadingAuth } = useAuth();
 
-  // Vérification des droits d'accès (user)
   const hasAccess = useRoleCheck({
     isLoading: isLoadingAuth,
     user,
@@ -20,14 +19,12 @@ const ContactList: React.FC = () => {
     redirectPath: "/dashboard",
   });
 
-  // Récupération des données du dashboard utilisateur
   const {
     dashboardData,
     loading: isLoadingDashboard,
     error: dashboardError,
   } = useUserDashboard();
 
-  // Récupération des contacts de l'entreprise
   const {
     contacts,
     loading: isLoadingContacts,
@@ -35,10 +32,9 @@ const ContactList: React.FC = () => {
   } = useContact({ companyId: dashboardData?.company?._id });
 
   if (isLoadingAuth || isLoadingDashboard || !hasAccess) {
-    return null; // Le LoadingOverlay du AuthContext s'affichera
+    return null;
   }
 
-  // Affichage des erreurs
   const error = dashboardError || contactsError;
   if (error) {
     return (
@@ -56,7 +52,6 @@ const ContactList: React.FC = () => {
     );
   }
 
-  // Si l'utilisateur n'a pas d'entreprise associée
   if (!dashboardData?.company) {
     return (
       <div style={{ padding: "20px" }}>
@@ -82,12 +77,19 @@ const ContactList: React.FC = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "20px",
+          marginBottom: "40px",
         }}
       >
         <div>
-          <h1 style={{ fontSize: "24px", marginBottom: "8px" }}>
-            Mes contacts
+          <h1
+            style={{
+              fontSize: "50px",
+              marginBottom: "8px",
+              color: "#333333",
+              fontFamily: "var(--font-first)",
+            }}
+          >
+            Contacts
           </h1>
           <p style={{ color: "#666" }}>
             Entreprise: <strong>{company.name}</strong>
@@ -95,11 +97,13 @@ const ContactList: React.FC = () => {
         </div>
         <div style={{ display: "flex", gap: "12px" }}>
           <ActionButton
-            onClick={() => router.push("/dashboard")}
+            onClick={() => alert("Action Importer à définir")}
             variant="secondary"
             size="medium"
+            customTextColor="#E9C46A"
+            customBorderColor="#E9C46A"
           >
-            Retour au tableau de bord
+            Importer
           </ActionButton>
           <ActionButton
             onClick={() =>
@@ -107,8 +111,9 @@ const ContactList: React.FC = () => {
             }
             variant="primary"
             size="large"
+            customColor="#E9C46A"
           >
-            Ajouter un contact
+            Créer contact
           </ActionButton>
         </div>
       </div>

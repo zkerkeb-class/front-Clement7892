@@ -8,7 +8,6 @@ import DeleteContactModal from "@/components/contacts/DeleteContactModal";
 import { Contact, deleteContact } from "@/services/contact.service";
 import { tableStyleProps } from "@/styles/components/tableStyles";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDateFormatterFr } from "@/hooks/useDateFormatter";
 import { useContactAssignedUsers } from "@/hooks/useContactAssignedUsers";
 import { useContactClients } from "@/hooks/useContactClients";
 
@@ -24,28 +23,18 @@ const ContactTable: React.FC<ContactTableProps> = ({
   contacts,
   companyId,
   isLoading,
-  isAdmin = false,
   onStatusChange,
 }) => {
   const router = useRouter();
   const { user } = useAuth();
-  const formatDate = useDateFormatterFr();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
 
-  // Utilisation des hooks personnalisés
   const { getAssignedUserName, loading: loadingUsers } =
     useContactAssignedUsers(contacts);
   const { getClientName, loading: loadingClients } =
     useContactClients(contacts);
-
-  // Détermination du préfixe de route basé sur le rôle
-  const getRoutePrefix = () => {
-    if (user?.role === "admin") return "admin";
-    if (user?.role === "manager") return "manager";
-    return "user";
-  };
 
   const handleDeleteClick = (contact: Contact) => {
     setContactToDelete(contact);
@@ -113,7 +102,6 @@ const ContactTable: React.FC<ContactTableProps> = ({
     {
       header: "Actions",
       accessor: (contact) => {
-        const routePrefix = getRoutePrefix();
         const isAdminOrManager =
           user?.role === "admin" || user?.role === "manager";
 
@@ -124,9 +112,7 @@ const ContactTable: React.FC<ContactTableProps> = ({
             <ActionButton
               onClick={() =>
                 router.push(
-                  isAdminOrManager
-                    ? `/dashboard/${routePrefix}/manage/company/clients/${companyId}/edit/${contact.client}?step=4`
-                    : `/dashboard/user/contacts/edit/${companyId}/${contact._id}`
+                  `/dashboard/user/contacts/edit/${companyId}/${contact._id}`
                 )
               }
               variant="secondary"
@@ -159,7 +145,6 @@ const ContactTable: React.FC<ContactTableProps> = ({
     },
   ];
 
-  // Utiliser les styles configurés
   const customTableStyles = {
     ...tableStyleProps,
     variant: "striped" as const,
@@ -177,6 +162,10 @@ const ContactTable: React.FC<ContactTableProps> = ({
         isLoading={isLoading || loadingUsers || loadingClients}
         emptyMessage="Aucun contact trouvé pour cette entreprise"
         styleProps={customTableStyles}
+        pagination={true}
+        defaultItemsPerPage={10}
+        paginationActiveColor="#E9C46A"
+        paginationTextColor="#E9C46A"
       />
       {showDeleteModal && contactToDelete && (
         <DeleteContactModal

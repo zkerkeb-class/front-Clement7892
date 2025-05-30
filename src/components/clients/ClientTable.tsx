@@ -1,17 +1,13 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Table, { TableColumn } from "@/components/common/Table";
-import StatusBadge from "@/components/common/StatusBadge";
 import ActionButton from "@/components/common/ActionButton";
-import ToggleClientStatus from "@/components/clients/ToggleClientStatus";
 import DeleteClientModal from "@/components/clients/DeleteClientModal";
 import { Client, deleteClient } from "@/services/client.service";
 import { tableStyleProps } from "@/styles/components/tableStyles";
 import { useAssignedUsers } from "@/hooks/useAssignedUsers";
 import { useRoutePrefix } from "@/hooks/useRoutePrefix";
-import { useDateFormatterFr } from "@/hooks/useDateFormatter";
 import { useAuth } from "@/contexts/AuthContext";
-import { FaTrash } from "react-icons/fa";
 
 interface ClientTableProps {
   clients: Client[];
@@ -24,7 +20,6 @@ const ClientTable: React.FC<ClientTableProps> = ({
   clients,
   companyId,
   isLoading,
-  onStatusChange,
 }) => {
   const router = useRouter();
   const { user } = useAuth();
@@ -32,18 +27,12 @@ const ClientTable: React.FC<ClientTableProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
 
-  // Utilisation des hooks personnalisés
   const routePrefix = useRoutePrefix();
-  const formatDate = useDateFormatterFr();
-  const {
-    assignedUsers,
-    loading: loadingUsers,
-    getAssignedUserName,
-  } = useAssignedUsers({ clients });
+  const { loading: loadingUsers, getAssignedUserName } = useAssignedUsers({
+    clients,
+  });
 
-  // Fonction pour générer les chemins de navigation en fonction du rôle
   const generatePath = (action: string, clientId: string, step?: number) => {
-    // Si l'utilisateur a le rôle "user"
     if (user?.role === "user") {
       switch (action) {
         case "edit":
@@ -52,12 +41,12 @@ const ClientTable: React.FC<ClientTableProps> = ({
           }`;
         case "contacts":
           return `/dashboard/user/clients/${clientId}/contacts`;
+        case "opportunity":
+          return `/dashboard/user/clients/opportunity/${clientId}`;
         default:
           return `/dashboard/user/clients/${clientId}`;
       }
-    }
-    // Pour les rôles admin et manager
-    else {
+    } else {
       switch (action) {
         case "edit":
           return `/dashboard/${routePrefix}/manage/company/clients/${companyId}/edit/${clientId}${
@@ -136,29 +125,21 @@ const ClientTable: React.FC<ClientTableProps> = ({
               Éditer
             </ActionButton>
             <ActionButton
-              onClick={() => router.push(generatePath("contacts", client._id))}
-              size="medium"
-            >
-              Contacts
-            </ActionButton>
-            {/* Afficher le bouton Opportunités uniquement pour les admins et managers */}
-            {user?.role !== "user" && (
-              <ActionButton
-                onClick={() =>
-                  router.push(generatePath("opportunity", client._id))
-                }
-                variant="primary"
-                size="medium"
-              >
-                Opportunités
-              </ActionButton>
-            )}
-            <ActionButton
               onClick={() => router.push(generatePath("edit", client._id, 3))}
-              variant="primary"
+              variant="secondary"
               size="medium"
             >
               Attribuer
+            </ActionButton>
+            <ActionButton
+              onClick={() =>
+                router.push(generatePath("opportunity", client._id))
+              }
+              variant="primary"
+              size="medium"
+              customColor="#A3B18A"
+            >
+              Opportunités
             </ActionButton>
             <ActionButton
               onClick={() => handleDeleteClick(client)}
@@ -166,7 +147,6 @@ const ClientTable: React.FC<ClientTableProps> = ({
               size="medium"
               disabled={deletingId === client._id}
             >
-              <FaTrash style={{ marginRight: "8px" }} />
               {deletingId === client._id ? "Suppression..." : "Supprimer"}
             </ActionButton>
           </div>
@@ -177,7 +157,6 @@ const ClientTable: React.FC<ClientTableProps> = ({
     },
   ];
 
-  // Utiliser les styles configurés
   const customTableStyles = {
     ...tableStyleProps,
     variant: "striped" as const,
@@ -197,6 +176,8 @@ const ClientTable: React.FC<ClientTableProps> = ({
         styleProps={customTableStyles}
         pagination={true}
         defaultItemsPerPage={10}
+        paginationActiveColor="#A3B18A"
+        paginationTextColor="#A3B18A"
       />
       {showDeleteModal && clientToDelete && (
         <DeleteClientModal

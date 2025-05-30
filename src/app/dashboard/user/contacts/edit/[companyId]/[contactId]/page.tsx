@@ -34,10 +34,23 @@ export default function EditContactPage() {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 style={styles.title}>
+        <h1
+          style={{
+            fontSize: "50px",
+            marginBottom: "8px",
+            color: "#333333",
+            fontFamily: "var(--font-first)",
+          }}
+        >
           {isEditMode ? "Modifier le contact" : "Créer un contact"}
         </h1>
-        <ActionButton onClick={navigateBack} variant="secondary" size="medium">
+        <ActionButton
+          onClick={navigateBack}
+          variant="secondary"
+          size="medium"
+          customTextColor="#E9C46A"
+          customBorderColor="#E9C46A"
+        >
           Retour
         </ActionButton>
       </div>
@@ -151,6 +164,8 @@ export default function EditContactPage() {
             onClick={navigateBack}
             variant="secondary"
             size="medium"
+            customTextColor="#E9C46A"
+            customBorderColor="#E9C46A"
           >
             Annuler
           </ActionButton>

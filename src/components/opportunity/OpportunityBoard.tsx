@@ -9,14 +9,16 @@ import {
   opportunityBoardStyles,
   statusColumns,
 } from "@/styles/components/opportunity/opportunityBoardStyles";
+import { FaTrashAlt } from "react-icons/fa";
 
 interface OpportunityBoardProps {
   opportunities: Opportunity[];
-  clientId: string;
-  companyId?: string; // Rendu optionnel pour le rôle "user"
+  clientId?: string;
+  companyId?: string;
   isLoading: boolean;
   onStatusChange: (opportunityId: string, newStatus: string) => void;
   viewMode: "kanban" | "list";
+  onDeleteClick?: (opportunity: Opportunity) => void;
 }
 
 const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
@@ -26,6 +28,7 @@ const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
   isLoading,
   onStatusChange,
   viewMode,
+  onDeleteClick,
 }) => {
   const router = useRouter();
   const { user } = useAuth();
@@ -33,19 +36,28 @@ const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
 
   const styles = opportunityBoardStyles;
 
-  // Fonction pour générer les URLs de navigation selon le rôle de l'utilisateur
   const getOpportunityEditUrl = (opportunityId: string) => {
+    if (!clientId) {
+      // Si nous sommes au niveau de l'entreprise, nous devons d'abord aller à la page du client
+      return `/dashboard/${routePrefix}/clients/${
+        opportunities.find((o) => o._id === opportunityId)?.client
+      }/opportunity/${opportunityId}`;
+    }
+
     if (routePrefix === "user") {
-      return `/dashboard/user/opportunity/${clientId}/edit/${opportunityId}`;
+      return `/dashboard/user/clients/opportunity/${clientId}/edit/${opportunityId}`;
     } else {
       return `/dashboard/${routePrefix}/manage/company/clients/${companyId}/opportunity/${clientId}/edit/${opportunityId}`;
     }
   };
 
   const getAddOpportunityUrl = () => {
-    
+    if (!clientId) {
+      return `/dashboard/${routePrefix}/clients`;
+    }
+
     if (routePrefix === "user") {
-      return `/dashboard/user/opportunity/${clientId}/add`;
+      return `/dashboard/user/clients/opportunity/${clientId}/add`;
     } else {
       return `/dashboard/${routePrefix}/manage/company/clients/${companyId}/opportunity/${clientId}/add`;
     }
@@ -53,6 +65,12 @@ const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
 
   const handleOpportunityClick = (opportunityId: string) => {
     router.push(getOpportunityEditUrl(opportunityId));
+  };
+
+  const handleDeleteClick = (opportunity: Opportunity) => {
+    if (onDeleteClick) {
+      onDeleteClick(opportunity);
+    }
   };
 
   const handleDragStart = (
@@ -147,13 +165,30 @@ const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
                       : "Non définie"}
                   </td>
                   <td style={styles.tableCellCenter}>
-                    <ActionButton
-                      onClick={() => handleOpportunityClick(opportunity._id)}
-                      variant="secondary"
-                      size="small"
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "8px",
+                        justifyContent: "center",
+                      }}
                     >
-                      Éditer
-                    </ActionButton>
+                      <ActionButton
+                        onClick={() => handleOpportunityClick(opportunity._id)}
+                        variant="secondary"
+                        size="small"
+                      >
+                        Éditer
+                      </ActionButton>
+                      {onDeleteClick && (
+                        <ActionButton
+                          onClick={() => handleDeleteClick(opportunity)}
+                          variant="danger"
+                          size="small"
+                        >
+                          <FaTrashAlt />
+                        </ActionButton>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );
@@ -214,7 +249,24 @@ const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
                       "0 2px 4px rgba(0,0,0,0.1)";
                   }}
                 >
-                  <h4 style={styles.opportunityTitle}>{opportunity.title}</h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <h4 style={styles.opportunityTitle}>{opportunity.title}</h4>
+                    {onDeleteClick && (
+                      <ActionButton
+                        onClick={() => handleDeleteClick(opportunity)}
+                        variant="danger"
+                        size="small"
+                      >
+                        <FaTrashAlt />
+                      </ActionButton>
+                    )}
+                  </div>
                   <div style={styles.opportunityValue}>
                     {formatCurrency(opportunity.value)}
                   </div>

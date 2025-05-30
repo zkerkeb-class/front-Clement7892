@@ -4,16 +4,16 @@ import React, { use } from "react";
 import OpportunityForm from "@/components/forms/opportunity/OpportunityForm";
 
 interface EditOpportunityProps {
-  params: {
-    role: string;
+  params: Promise<{
     companyId: string;
     clientId: string;
     opportunityId: string;
-  };
+  }>;
 }
 
 const EditOpportunity: React.FC<EditOpportunityProps> = ({ params }) => {
-  const { companyId, clientId, opportunityId, role } = params;
+  const unwrappedParams = use(params);
+  const { companyId, clientId, opportunityId } = unwrappedParams;
 
   return (
     <OpportunityForm

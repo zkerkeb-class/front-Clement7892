@@ -2,14 +2,14 @@ import React from "react";
 import { clientDetailsStyles as styles } from "@/styles/pages/dashboard/admin/clientDetailsStyles";
 import ActionButton from "@/components/common/ActionButton";
 
-interface DeleteContactModalProps {
-  contactName: string;
+interface DeleteOpportunityModalProps {
+  opportunityName: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
-  contactName,
+const DeleteOpportunityModal: React.FC<DeleteOpportunityModalProps> = ({
+  opportunityName,
   onCancel,
   onConfirm,
 }) => {
@@ -19,8 +19,8 @@ const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
         <div style={styles.modalHeader}>
           <h3 style={styles.modalTitle}>Confirmer la suppression</h3>
           <p style={styles.modalText}>
-            Êtes-vous sûr de vouloir supprimer le contact{" "}
-            <strong>{contactName}</strong> ? Cette action ne peut pas être
+            Êtes-vous sûr de vouloir supprimer l'opportunité{" "}
+            <strong>{opportunityName}</strong> ? Cette action ne peut pas être
             annulée.
           </p>
         </div>
@@ -37,4 +37,4 @@ const DeleteContactModal: React.FC<DeleteContactModalProps> = ({
   );
 };
 
-export default DeleteContactModal;
+export default DeleteOpportunityModal;

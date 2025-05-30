@@ -245,7 +245,7 @@ export const useClientDetails = (clientId: string): UseClientDetailsReturn => {
   const navigateToOpportunity = (opportunityId: string) => {
     const baseRoute = getBaseRoute();
     if (routePrefix === "user") {
-      router.push(`/dashboard/user/opportunity/${clientId}`);
+      router.push(`/dashboard/user/clients/opportunity/${clientId}`);
     } else {
       router.push(
         `${baseRoute}/company/clients/${company?._id}/opportunity/${clientId}`
@@ -267,7 +267,7 @@ export const useClientDetails = (clientId: string): UseClientDetailsReturn => {
   const navigateToOpportunitiesManagement = () => {
     const baseRoute = getBaseRoute();
     if (routePrefix === "user") {
-      router.push(`/dashboard/user/opportunity/${clientId}`);
+      router.push(`/dashboard/user/clients/opportunity/${clientId}`);
     } else {
       router.push(
         `${baseRoute}/company/clients/${company?._id}/opportunity/${clientId}`

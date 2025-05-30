@@ -5,7 +5,6 @@ export const contactStyles = {
     backgroundColor: "var(--color-white)",
     padding: "var(--spacing-big)",
     borderRadius: "var(--border-radius)",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
     marginBottom: "var(--spacing-big)",
   },
   header: {
@@ -125,7 +124,7 @@ export const contactStyles = {
   },
   submitButton: {
     padding: "10px 20px",
-    backgroundColor: "var(--color-blue)",
+    backgroundColor: "#E9C46A",
     color: "var(--color-white)",
     border: "none",
     borderRadius: "var(--border-small-radius)",

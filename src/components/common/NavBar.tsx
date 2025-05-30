@@ -20,6 +20,7 @@ interface NavBarProps {
     active: boolean;
     provider?: string;
     phoneNumber?: string;
+    companyId?: string;
   } | null;
 }
 
@@ -50,13 +51,11 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
     setLocalUserData(updatedUser);
   };
 
-  // Style fixe de la barre latérale - ne change pas avec le thème
   const sidebarStyle: CSSProperties = {
     ...dashboardStyles.sidebar,
-    backgroundColor: "#1F2937", // Couleur fixe pour la barre latérale
+    backgroundColor: "#1F2937",
   };
 
-  // Styles pour les menus de navigation
   const getDashboardNavStyle = (): CSSProperties => ({
     ...dashboardStyles.navigation,
     ...(hoveredIcon === 0
@@ -85,17 +84,15 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
       : dashboardStyles.navigationCalendar),
   });
 
-  // Style des éléments de navigation avec thème
   const navItemStyle = (isActive: boolean): CSSProperties => ({
     ...dashboardStyles.navItem,
     ...(isActive ? dashboardStyles.navItemActive : {}),
   });
 
-  // Style fixe pour les boutons d'icône - ne change pas avec le thème
   const iconButtonStyle = (active: boolean): CSSProperties => ({
     ...dashboardStyles.iconButton,
     ...(active ? dashboardStyles.iconButtonActive : {}),
-    color: "#FFFFFF", // Couleur de texte fixe pour les icônes
+    color: "#FFFFFF",
   });
 
   const handleNavItemClick = (route: string) => {
@@ -424,7 +421,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
             }
           }}
         >
-          Contact
+          Contacts
         </div>
         <div
           style={navItemStyle(true)}
@@ -436,7 +433,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
             }
           }}
         >
-          Client
+          Clients
         </div>
         <div
           style={navItemStyle(false)}
@@ -444,7 +441,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
             handleNavItemClick(`${navigation.baseRoute}/opportunities`)
           }
         >
-          Opportunité
+          Opportunités
         </div>
         {(localUserData?.role === "admin" ||
           localUserData?.role === "manager") && (

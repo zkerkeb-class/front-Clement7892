@@ -1,6 +1,5 @@
 import React from "react";
 import ActionButton from "@/components/common/ActionButton";
-import { FaTrashAlt } from "react-icons/fa";
 import { clientDetailsStyles as styles } from "@/styles/pages/dashboard/admin/clientDetailsStyles";
 
 interface DeleteClientModalProps {
@@ -37,7 +36,6 @@ const DeleteClientModal: React.FC<DeleteClientModalProps> = ({
               Annuler
             </ActionButton>
             <ActionButton onClick={onConfirm} variant="danger" size="medium">
-              <FaTrashAlt style={{ marginRight: "8px" }} />
               Supprimer
             </ActionButton>
           </div>

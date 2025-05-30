@@ -2,49 +2,43 @@
 import React, { use } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRoleCheck } from "@/hooks/useRoleCheck";
-import { useOpportunityManagement } from "@/hooks/useOpportunityManagement";
-import OpportunityBoard from "@/components/opportunity/OpportunityBoard";
+import { useCompanyOpportunities } from "@/hooks/useCompanyOpportunities";
 import ActionButton from "@/components/common/ActionButton";
+import OpportunityBoard from "@/components/opportunity/OpportunityBoard";
 
-interface OpportunityManagementProps {
+interface CompanyOpportunitiesProps {
   params: Promise<{
-    clientId: string;
     companyId: string;
   }>;
 }
 
-const OpportunityManagement: React.FC<OpportunityManagementProps> = ({
+const CompanyOpportunities: React.FC<CompanyOpportunitiesProps> = ({
   params,
 }) => {
   const unwrappedParams = use(params);
-  const clientId = unwrappedParams.clientId;
   const companyId = unwrappedParams.companyId;
 
   const { user, isLoading } = useAuth();
 
-  // Vérification du rôle admin, manager ou user
   const hasAccess = useRoleCheck({
     isLoading,
     user,
-    requiredRole: ["admin", "manager", "user"],
+    requiredRole: ["admin"],
     redirectPath: "/dashboard",
   });
 
-  // Utilisation du hook personnalisé pour gérer la logique des opportunités
   const {
     opportunities,
-    client,
     error,
     isLoadingOpportunities,
     viewMode,
     setViewMode,
     handleStatusChange,
     navigateToClientsList,
-    navigateToAddOpportunity,
-  } = useOpportunityManagement({ clientId, companyId });
+  } = useCompanyOpportunities({ companyId });
 
   if (isLoading || !user) {
-    return null; // Le LoadingOverlay du AuthContext s'affichera
+    return null;
   }
 
   if (error) {
@@ -70,18 +64,13 @@ const OpportunityManagement: React.FC<OpportunityManagementProps> = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "20px",
+          marginBottom: "40px",
         }}
       >
         <div>
-          <h1 style={{ fontSize: "24px", marginBottom: "8px" }}>
-            Gestion des opportunités
+          <h1 style={{ fontSize: "50px", marginBottom: "8px" }}>
+            Opportunités de l'entreprise
           </h1>
-          {client && (
-            <p style={{ color: "#666" }}>
-              Client: <strong>{client.name}</strong>
-            </p>
-          )}
         </div>
         <div style={{ display: "flex", gap: "12px" }}>
           <div
@@ -96,7 +85,9 @@ const OpportunityManagement: React.FC<OpportunityManagementProps> = ({
               onClick={() => setViewMode("kanban")}
               style={{
                 padding: "8px 12px",
-                background: viewMode === "kanban" ? "#f0f0f0" : "white",
+                background:
+                  viewMode === "kanban" ? "#E76F51" : "var(--color-neutral)",
+                color: viewMode === "kanban" ? "white" : "#E76F51",
                 border: "none",
                 cursor: "pointer",
               }}
@@ -107,7 +98,9 @@ const OpportunityManagement: React.FC<OpportunityManagementProps> = ({
               onClick={() => setViewMode("list")}
               style={{
                 padding: "8px 12px",
-                background: viewMode === "list" ? "#f0f0f0" : "white",
+                background:
+                  viewMode === "list" ? "#E76F51" : "var(--color-neutral)",
+                color: viewMode === "kanban" ? "#E76F51" : "white",
                 border: "none",
                 cursor: "pointer",
               }}
@@ -119,22 +112,16 @@ const OpportunityManagement: React.FC<OpportunityManagementProps> = ({
             onClick={navigateToClientsList}
             variant="secondary"
             size="medium"
+            customTextColor="#E76F51"
+            customBorderColor="#E76F51"
           >
             Retour aux clients
-          </ActionButton>
-          <ActionButton
-            onClick={navigateToAddOpportunity}
-            variant="primary"
-            size="large"
-          >
-            Ajouter une opportunité
           </ActionButton>
         </div>
       </div>
 
       <OpportunityBoard
         opportunities={opportunities}
-        clientId={clientId}
         isLoading={isLoadingOpportunities}
         onStatusChange={handleStatusChange}
         viewMode={viewMode}
@@ -143,4 +130,4 @@ const OpportunityManagement: React.FC<OpportunityManagementProps> = ({
   );
 };
 
-export default OpportunityManagement;
+export default CompanyOpportunities;

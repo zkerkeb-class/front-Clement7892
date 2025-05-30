@@ -84,13 +84,10 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({
     );
   }
 
-  // Fonction pour générer l'URL de retour en fonction du rôle de l'utilisateur
   const getBackUrl = () => {
-    // Pour les utilisateurs avec le rôle "user"
     if (routePrefix === "user") {
-      return `/dashboard/user/opportunity/${clientId}`;
+      return `/dashboard/user/clients/opportunity/${clientId}`;
     }
-    // Pour les rôles admin et manager
     return `/dashboard/${routePrefix}/manage/company/clients/${companyId}/opportunity/${clientId}`;
   };
 

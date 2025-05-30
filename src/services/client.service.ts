@@ -25,6 +25,13 @@ export interface Client {
   updatedAt?: string;
 }
 
+export interface ClientCreateInput
+  extends Omit<Client, "_id" | "createdAt" | "updatedAt"> {
+  name: string;
+  company: string;
+  isActive: boolean;
+}
+
 const headers = {
   "Content-Type": "application/json",
 };
@@ -75,7 +82,7 @@ export const getClientById = async (id: string): Promise<Client> => {
     const response = await fetch(`${API_URL}/clients/${id}`, {
       method: "GET",
       headers: {
-        ...headers,
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -83,26 +90,24 @@ export const getClientById = async (id: string): Promise<Client> => {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Erreur lors de la récupération du client"
+        errorData.error ||
+          errorData.message ||
+          "Erreur lors de la récupération du client"
       );
     }
 
-    // Ajouter du debug pour voir la structure de la réponse
     const data = await response.json();
-    console.log("Réponse de getClientById:", data);
 
-    // Gérer différentes structures de réponse
-    if (data && data.data) {
-      return data.data;
-    } else if (data && data._id) {
-      return data;
-    } else {
-      console.warn("Structure de réponse inattendue dans getClientById:", data);
-      return data;
+    if (!data.success) {
+      throw new Error(data.error || "Erreur lors de la récupération du client");
     }
+
+    return data.data;
   } catch (error: any) {
     console.error(`getClientById error for id ${id}:`, error);
-    throw error;
+    throw new Error(
+      error.message || "Erreur lors de la récupération du client"
+    );
   }
 };
 
@@ -137,10 +142,7 @@ export const getClientsByCompany = async (
     const result = await response.json();
     return result.data || [];
   } catch (error: any) {
-    console.error(
-      `getClientsByCompany error for company ${companyId}:`,
-      error
-    );
+    console.error(`getClientsByCompany error for company ${companyId}:`, error);
     throw error;
   }
 };

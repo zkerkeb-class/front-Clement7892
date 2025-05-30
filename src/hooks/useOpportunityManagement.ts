@@ -6,6 +6,7 @@ import {
   getOpportunitiesByClient,
   Opportunity,
   updateOpportunity,
+  deleteOpportunity as deleteOpportunityService,
 } from "@/services/opportunity.service";
 import { getClientById, Client } from "@/services/client.service";
 import { getRoutePrefix } from "@/utils/getRoutePrefix";
@@ -37,6 +38,7 @@ interface UseOpportunityManagementReturn {
   ) => Promise<void>;
   navigateToClientsList: () => void;
   navigateToAddOpportunity: () => void;
+  deleteOpportunity: (opportunityId: string) => Promise<void>;
 }
 
 export const useOpportunityManagement = ({
@@ -91,7 +93,7 @@ export const useOpportunityManagement = ({
 
     if (routePrefix === "user") {
       // Pour les utilisateurs avec rôle "user"
-      router.push(`/dashboard/user/opportunity/${clientId}/add`);
+      router.push(`/dashboard/user/clients/opportunity/${clientId}/add`);
     } else {
       // Pour les rôles admin et manager
       const effectiveCompanyId = companyId || client?.company;
@@ -222,36 +224,24 @@ export const useOpportunityManagement = ({
       // On pourrait ajouter un message de succès ici si nécessaire
     } catch (error) {
       console.error("Erreur lors de la mise à jour du statut:", error);
-
-      // Afficher un message d'erreur à l'utilisateur
       setError(
         "Échec de la mise à jour du statut. Réessayez ou rafraîchissez la page."
       );
 
-      // Rollback en cas d'erreur
-      try {
-        const response = await getOpportunitiesByClient(clientId);
+      // Recharger les opportunités en cas d'erreur
+      await fetchOpportunities();
+    }
+  };
 
-        // Utiliser le même traitement que dans fetchOpportunities
-        let refreshedOpportunities: Opportunity[] = [];
-
-        if (Array.isArray(response)) {
-          refreshedOpportunities = response;
-        } else if (
-          response &&
-          typeof response === "object" &&
-          "data" in response
-        ) {
-          refreshedOpportunities = response.data || [];
-        }
-
-        setOpportunities(refreshedOpportunities);
-      } catch (refreshError) {
-        console.error(
-          "Erreur lors du rafraîchissement des opportunités:",
-          refreshError
-        );
-      }
+  const deleteOpportunity = async (opportunityId: string) => {
+    try {
+      await deleteOpportunityService(opportunityId);
+      setOpportunities((prevOpportunities) =>
+        prevOpportunities.filter((opp) => opp._id !== opportunityId)
+      );
+    } catch (err: any) {
+      console.error("Erreur lors de la suppression:", err);
+      throw err;
     }
   };
 
@@ -265,5 +255,6 @@ export const useOpportunityManagement = ({
     handleStatusChange,
     navigateToClientsList,
     navigateToAddOpportunity,
+    deleteOpportunity,
   };
 };

@@ -428,7 +428,7 @@ export const useOpportunityForm = ({
   // Fonction pour générer l'URL de redirection après soumission
   const getRedirectUrl = () => {
     if (routePrefix === "user") {
-      return `/dashboard/user/opportunity/${clientId}`;
+      return `/dashboard/user/clients/opportunity/${clientId}`;
     } else {
       // Utiliser soit companyId fourni, soit celui récupéré du client
       const effectiveCompanyId = companyId || client?.company;
