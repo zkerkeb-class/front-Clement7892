@@ -104,13 +104,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
     color: "#FFFFFF",
   });
 
-  const handleNavItemClick = (route: string) => {
-    navigateTo(route);
-  };
-
   const renderNavItems = () => {
-    const role = localUserData?.role || "user";
-
     const commonNavItems = (
       <>
         <div
@@ -136,98 +130,10 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
             <rect x="14" y="14" width="8" height="8" rx="1"></rect>
           </svg>
         </div>
-        <div
-          style={iconButtonStyle(hoveredIcon === 12)}
-          onMouseEnter={() => setHoveredIcon(12)}
-          onClick={() => navigateToPipeline("clients")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={dashboardStyles.svgIcon}
-          >
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-        </div>
       </>
     );
 
-    const adminItems = (
-      <>
-        <div
-          style={iconButtonStyle(hoveredIcon === 10)}
-          onMouseEnter={() => setHoveredIcon(10)}
-          onClick={() => navigateToAdmin("userManagement")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={dashboardStyles.svgIcon}
-          >
-            <path d="M12 2v2"></path>
-            <path d="M12 20v2"></path>
-            <path d="m4.93 4.93 1.41 1.41"></path>
-            <path d="m17.66 17.66 1.41 1.41"></path>
-            <path d="M2 12h2"></path>
-            <path d="M20 12h2"></path>
-            <path d="m6.34 17.66-1.41 1.41"></path>
-            <path d="m19.07 4.93-1.41 1.41"></path>
-            <circle cx="12" cy="12" r="4"></circle>
-          </svg>
-        </div>
-      </>
-    );
-
-    const managerItems = (
-      <>
-        <div
-          style={iconButtonStyle(hoveredIcon === 11)}
-          onMouseEnter={() => setHoveredIcon(11)}
-          onClick={() => navigateToManager("dashboard")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={dashboardStyles.svgIcon}
-          >
-            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-          </svg>
-        </div>
-      </>
-    );
-
-    return (
-      <>
-        {commonNavItems}
-        {role === "admin" && adminItems}
-        {(role === "manager" || role === "admin") && managerItems}
-      </>
-    );
+    return <>{commonNavItems}</>;
   };
 
   if (!localUserData) {
@@ -255,7 +161,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
 
         {renderNavItems()}
 
-        <div
+        {/* <div
           style={iconButtonStyle(hoveredIcon === 1)}
           onMouseEnter={() => setHoveredIcon(1)}
           onClick={() => navigateToPhone("recentCalls")}
@@ -320,7 +226,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
             <line x1="8" y1="2" x2="8" y2="6"></line>
             <line x1="3" y1="10" x2="21" y2="10"></line>
           </svg>
-        </div>
+        </div> */}
 
         <div style={dashboardStyles.spacer}></div>
 
@@ -512,66 +418,6 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
           Événements
         </div>
       </div>
-
-      {/* Admin section */}
-      {user?.role === "admin" && (
-        <>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToAdmin("userManagement")}
-          >
-            Gestion des utilisateurs
-          </div>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToAdmin("systemSettings")}
-          >
-            Paramètres système
-          </div>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToAdmin("activityLogs")}
-          >
-            Logs d'activité
-          </div>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToAdmin("crmConfiguration")}
-          >
-            Configuration CRM
-          </div>
-        </>
-      )}
-
-      {/* Manager section */}
-      {user?.role === "manager" && (
-        <>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToManager("dashboard")}
-          >
-            Tableau de bord
-          </div>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToManager("salesPerformance")}
-          >
-            Performance des ventes
-          </div>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToManager("salesAnalysis")}
-          >
-            Analyse des ventes
-          </div>
-          <div
-            style={navItemStyle(false)}
-            onClick={() => navigateToManager("teamStats")}
-          >
-            Statistiques d'équipe
-          </div>
-        </>
-      )}
 
       {localUserData && (
         <ProfileModal
