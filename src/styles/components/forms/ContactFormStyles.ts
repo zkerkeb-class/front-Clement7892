@@ -155,4 +155,15 @@ export const contactStyles = {
     padding: "var(--spacing-big)",
     color: "var(--color-grey-600)",
   },
+  displayField: {
+    padding: "8px 12px",
+    backgroundColor: "#f5f5f5",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    minHeight: "40px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: "14px",
+    color: "#333",
+  },
 };

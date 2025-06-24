@@ -79,7 +79,7 @@ const DashboardContent: React.FC<{ children: ReactNode }> = ({ children }) => {
       <div style={sidebarStyle}>
         <NavBar user={user} />
       </div>
-      <div style={contentStyle}>{children}</div>
+      <main style={contentStyle}>{children}</main>
     </div>
   );
 };

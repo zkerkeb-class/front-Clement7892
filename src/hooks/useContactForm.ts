@@ -8,6 +8,7 @@ import {
   createContact,
 } from "@/services/contact.service";
 import { getClientById } from "@/services/client.service";
+import { useNavigation } from "@/hooks/useNavigation";
 
 interface ContactFormData {
   firstName: string;
@@ -23,6 +24,7 @@ interface ContactFormData {
 export const useContactForm = (companyId: string, contactId?: string) => {
   const router = useRouter();
   const { user } = useAuth();
+  const { navigateToContact } = useNavigation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -105,7 +107,6 @@ export const useContactForm = (companyId: string, contactId?: string) => {
     try {
       console.log("Préparation des données du contact:", formData);
 
-      // Nettoyage et validation des données
       const contactData: Partial<Contact> = {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
@@ -120,7 +121,6 @@ export const useContactForm = (companyId: string, contactId?: string) => {
         client: companyId,
       };
 
-      // Validation des données
       if (contactData.email && !contactData.email.includes("@")) {
         setError("L'adresse email n'est pas valide");
         return;
@@ -139,7 +139,7 @@ export const useContactForm = (companyId: string, contactId?: string) => {
 
       // Redirection après 2 secondes
       setTimeout(() => {
-        router.push(`/dashboard/user/contacts`);
+        navigateToContact("list");
       }, 2000);
     } catch (err: any) {
       console.error("Erreur lors de la manipulation du contact:", err);

@@ -29,7 +29,16 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
   const { hoveredIcon, setHoveredIcon } = useNavbar();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
-  const navigation = useNavigation();
+  const {
+    navigateTo,
+    navigateToPipeline,
+    navigateToPhone,
+    navigateToEmail,
+    navigateToCalendar,
+    navigateToAdmin,
+    navigateToManager,
+    navigateToContact,
+  } = useNavigation();
 
   const user = authUser || initialUser;
   const [localUserData, setLocalUserData] = useState(user);
@@ -96,7 +105,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
   });
 
   const handleNavItemClick = (route: string) => {
-    navigation.navigateTo(route);
+    navigateTo(route);
   };
 
   const renderNavItems = () => {
@@ -107,7 +116,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
         <div
           style={iconButtonStyle(hoveredIcon === 0)}
           onMouseEnter={() => setHoveredIcon(0)}
-          onClick={navigation.navigateToDashboard}
+          onClick={() => navigateTo("/dashboard")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +139,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
         <div
           style={iconButtonStyle(hoveredIcon === 12)}
           onMouseEnter={() => setHoveredIcon(12)}
-          onClick={() => navigation.navigateTo("/clients")}
+          onClick={() => navigateToPipeline("clients")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -158,7 +167,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
         <div
           style={iconButtonStyle(hoveredIcon === 10)}
           onMouseEnter={() => setHoveredIcon(10)}
-          onClick={() => navigation.navigateToAdminSection("userManagement")}
+          onClick={() => navigateToAdmin("userManagement")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +200,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
         <div
           style={iconButtonStyle(hoveredIcon === 11)}
           onMouseEnter={() => setHoveredIcon(11)}
-          onClick={() => navigation.navigateToManagerSection("dashboard")}
+          onClick={() => navigateToManager("dashboard")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -230,7 +239,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
       <div style={sidebarStyle}>
         <div
           style={dashboardStyles.logoContainer}
-          onClick={navigation.navigateToDashboard}
+          onClick={() => navigateTo("/dashboard")}
         >
           <Image
             src="/img/logo/logo_crew.png"
@@ -249,7 +258,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
         <div
           style={iconButtonStyle(hoveredIcon === 1)}
           onMouseEnter={() => setHoveredIcon(1)}
-          onClick={() => navigation.navigateToPhone()}
+          onClick={() => navigateToPhone("recentCalls")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -270,7 +279,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
         <div
           style={iconButtonStyle(hoveredIcon === 2)}
           onMouseEnter={() => setHoveredIcon(2)}
-          onClick={() => navigation.navigateToEmail()}
+          onClick={() => navigateToEmail("inbox")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -292,7 +301,7 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
         <div
           style={iconButtonStyle(hoveredIcon === 3)}
           onMouseEnter={() => setHoveredIcon(3)}
-          onClick={() => navigation.navigateToCalendar()}
+          onClick={() => navigateToCalendar("agenda")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -413,68 +422,47 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
       >
         <div
           style={navItemStyle(false)}
-          onClick={() => {
-            if (localUserData?.role === "manager") {
-              navigation.navigateTo("/dashboard/manager/contacts");
-            } else {
-              handleNavItemClick(`${navigation.baseRoute}/contacts`);
-            }
-          }}
+          onClick={() => navigateToContact("list")}
         >
           Contacts
         </div>
         <div
           style={navItemStyle(true)}
-          onClick={() => {
-            if (localUserData?.role === "manager") {
-              navigation.navigateTo("/dashboard/manager/clients");
-            } else {
-              handleNavItemClick(`${navigation.baseRoute}/clients`);
-            }
-          }}
+          onClick={() => navigateToPipeline("clients")}
         >
           Clients
         </div>
         <div
           style={navItemStyle(false)}
-          onClick={() =>
-            handleNavItemClick(`${navigation.baseRoute}/opportunities`)
-          }
+          onClick={() => navigateToPipeline("opportunities")}
         >
           Opportunités
         </div>
-        {(localUserData?.role === "admin" ||
-          localUserData?.role === "manager") && (
-          <>
-            <div
-              style={navItemStyle(false)}
-              onClick={() =>
-                handleNavItemClick(`${navigation.baseRoute}/deals`)
-              }
-            >
-              Deals
-            </div>
-          </>
-        )}
+        <div
+          style={navItemStyle(false)}
+          onClick={() => navigateToPipeline("deals")}
+        >
+          Deals
+        </div>
       </div>
 
       {/* Menu Téléphone */}
       <div style={getPhoneNavStyle()} onMouseLeave={() => setHoveredIcon(null)}>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToPhone("recentCalls")}
+          onClick={() => navigateToPhone("recentCalls")}
         >
           Appels récents
         </div>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToPhone("favorites")}
+          onClick={() => navigateToPhone("favorites")}
         >
           Contacts favoris
         </div>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToPhone("schedule")}
+          onClick={() => navigateToPhone("schedule")}
         >
           Programmer un appel
         </div>
@@ -483,19 +471,19 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
       <div style={getEmailNavStyle()} onMouseLeave={() => setHoveredIcon(null)}>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToEmail("inbox")}
+          onClick={() => navigateToEmail("inbox")}
         >
           Boîte de réception
         </div>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToEmail("sent")}
+          onClick={() => navigateToEmail("sent")}
         >
           Envoyés
         </div>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToEmail("drafts")}
+          onClick={() => navigateToEmail("drafts")}
         >
           Brouillons
         </div>
@@ -507,107 +495,82 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
       >
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToCalendar("agenda")}
+          onClick={() => navigateToCalendar("agenda")}
         >
           Agenda
         </div>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToCalendar("appointments")}
+          onClick={() => navigateToCalendar("appointments")}
         >
           Rendez-vous
         </div>
         <div
           style={navItemStyle(false)}
-          onClick={() => navigation.navigateToCalendar("events")}
+          onClick={() => navigateToCalendar("events")}
         >
           Événements
         </div>
       </div>
 
-      {localUserData?.role === "admin" && (
-        <div
-          style={{
-            ...dashboardStyles.navigation,
-            ...(hoveredIcon === 10
-              ? {
-                  ...dashboardStyles.navigationDashboardVisible,
-                  backgroundColor: "#2c3e50",
-                }
-              : dashboardStyles.navigationDashboard),
-          }}
-          onMouseLeave={() => setHoveredIcon(null)}
-        >
+      {/* Admin section */}
+      {user?.role === "admin" && (
+        <>
           <div
             style={navItemStyle(false)}
-            onClick={() => navigation.navigateToAdminSection("userManagement")}
+            onClick={() => navigateToAdmin("userManagement")}
           >
             Gestion des utilisateurs
           </div>
           <div
             style={navItemStyle(false)}
-            onClick={() => navigation.navigateToAdminSection("systemSettings")}
+            onClick={() => navigateToAdmin("systemSettings")}
           >
             Paramètres système
           </div>
           <div
             style={navItemStyle(false)}
-            onClick={() => navigation.navigateToAdminSection("activityLogs")}
+            onClick={() => navigateToAdmin("activityLogs")}
           >
             Logs d'activité
           </div>
           <div
             style={navItemStyle(false)}
-            onClick={() =>
-              navigation.navigateToAdminSection("crmConfiguration")
-            }
+            onClick={() => navigateToAdmin("crmConfiguration")}
           >
             Configuration CRM
           </div>
-        </div>
+        </>
       )}
 
-      {(localUserData?.role === "manager" ||
-        localUserData?.role === "admin") && (
-        <div
-          style={{
-            ...dashboardStyles.navigation,
-            ...(hoveredIcon === 11
-              ? {
-                  ...dashboardStyles.navigationDashboardVisible,
-                  backgroundColor: "#34495e",
-                }
-              : dashboardStyles.navigationDashboard),
-          }}
-          onMouseLeave={() => setHoveredIcon(null)}
-        >
+      {/* Manager section */}
+      {user?.role === "manager" && (
+        <>
           <div
             style={navItemStyle(false)}
-            onClick={() => navigation.navigateToManagerSection("dashboard")}
+            onClick={() => navigateToManager("dashboard")}
           >
             Tableau de bord
           </div>
           <div
             style={navItemStyle(false)}
-            onClick={() =>
-              navigation.navigateToManagerSection("salesPerformance")
-            }
+            onClick={() => navigateToManager("salesPerformance")}
           >
-            Performance commerciale
+            Performance des ventes
           </div>
           <div
             style={navItemStyle(false)}
-            onClick={() => navigation.navigateToManagerSection("salesAnalysis")}
+            onClick={() => navigateToManager("salesAnalysis")}
           >
             Analyse des ventes
           </div>
           <div
             style={navItemStyle(false)}
-            onClick={() => navigation.navigateToManagerSection("teamStats")}
+            onClick={() => navigateToManager("teamStats")}
           >
             Statistiques d'équipe
           </div>
-        </div>
+        </>
       )}
 
       {localUserData && (

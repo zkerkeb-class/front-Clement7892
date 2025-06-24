@@ -22,6 +22,7 @@ interface TableProps<T> {
   defaultItemsPerPage?: 5 | 10 | 25; // Nombre d'éléments par page par défaut
   paginationActiveColor?: string; // Couleur de fond pour le numéro de page actif
   paginationTextColor?: string; // Couleur du texte pour les numéros de page
+  onRowClick?: (item: T) => void;
 }
 
 const Table = <T extends object>({
@@ -36,6 +37,7 @@ const Table = <T extends object>({
   defaultItemsPerPage = 10,
   paginationActiveColor = "#A3B18A", // Couleur par défaut si non spécifiée
   paginationTextColor = "#A3B18A", // Couleur par défaut si non spécifiée
+  onRowClick,
 }: TableProps<T>) => {
   const styles = tableStyles(styleProps);
 
@@ -158,14 +160,30 @@ const Table = <T extends object>({
                   ...styles.rowStyle(rowIndex % 2 === 1),
                 }}
               >
-                {columns.map((column, colIndex) => (
-                  <td
-                    key={colIndex}
-                    style={getCellStyle(column, rowIndex % 2 === 1)}
-                  >
-                    {renderCell(item, column)}
-                  </td>
-                ))}
+                {columns.map((column, colIndex) => {
+                  const isLastColumn = colIndex === columns.length - 1;
+                  const cellStyle = {
+                    ...getCellStyle(column, rowIndex % 2 === 1),
+                    cursor: !isLastColumn && onRowClick ? "pointer" : undefined,
+                  };
+
+                  return (
+                    <td
+                      key={colIndex}
+                      style={cellStyle}
+                      onClick={
+                        !isLastColumn && onRowClick
+                          ? (e) => {
+                              e.stopPropagation();
+                              onRowClick(item);
+                            }
+                          : undefined
+                      }
+                    >
+                      {renderCell(item, column)}
+                    </td>
+                  );
+                })}
               </tr>
             ))
           )}

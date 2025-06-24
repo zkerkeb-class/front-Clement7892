@@ -98,11 +98,18 @@ export const getClientById = async (id: string): Promise<Client> => {
 
     const data = await response.json();
 
-    if (!data.success) {
-      throw new Error(data.error || "Erreur lors de la récupération du client");
+    // Gérer différents formats de réponse possibles
+    if (data.success && data.data) {
+      return data.data;
+    } else if (data._id) {
+      // Si la réponse est directement l'objet client
+      return data;
+    } else if (data.client) {
+      // Si la réponse contient un champ client
+      return data.client;
     }
 
-    return data.data;
+    throw new Error("Format de réponse invalide");
   } catch (error: any) {
     console.error(`getClientById error for id ${id}:`, error);
     throw new Error(

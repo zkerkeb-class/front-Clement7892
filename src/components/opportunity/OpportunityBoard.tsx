@@ -3,8 +3,6 @@ import { useRouter } from "next/navigation";
 import { Opportunity } from "@/services/opportunity.service";
 import { formatCurrency } from "@/utils/formatters";
 import ActionButton from "@/components/common/ActionButton";
-import { useAuth } from "@/contexts/AuthContext";
-import { getRoutePrefix } from "@/utils/getRoutePrefix";
 import {
   opportunityBoardStyles,
   statusColumns,
@@ -24,43 +22,39 @@ interface OpportunityBoardProps {
 const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
   opportunities,
   clientId,
-  companyId,
   isLoading,
   onStatusChange,
   viewMode,
   onDeleteClick,
 }) => {
   const router = useRouter();
-  const { user } = useAuth();
-  const routePrefix = getRoutePrefix(user?.role);
-
   const styles = opportunityBoardStyles;
 
   const getOpportunityEditUrl = (opportunityId: string) => {
-    if (!clientId) {
-      // Si nous sommes au niveau de l'entreprise, nous devons d'abord aller à la page du client
-      return `/dashboard/${routePrefix}/clients/${
-        opportunities.find((o) => o._id === opportunityId)?.client
-      }/opportunity/${opportunityId}`;
+    const opportunity = opportunities.find((o) => o._id === opportunityId);
+    if (!opportunity) {
+      console.error(`Opportunité avec l'ID ${opportunityId} non trouvée.`);
+      return "#";
     }
 
-    if (routePrefix === "user") {
-      return `/dashboard/user/clients/opportunity/${clientId}/edit/${opportunityId}`;
-    } else {
-      return `/dashboard/${routePrefix}/manage/company/clients/${companyId}/opportunity/${clientId}/edit/${opportunityId}`;
+    const targetClientId = clientId || opportunity.client;
+
+    if (!targetClientId) {
+      console.error(
+        `Impossible de déterminer le client pour l'opportunité ${opportunityId}.`
+      );
+      return "#";
     }
+
+    return `/dashboard/pipeline/clients/opportunity/${targetClientId}/edit/${opportunityId}`;
   };
 
   const getAddOpportunityUrl = () => {
     if (!clientId) {
-      return `/dashboard/${routePrefix}/clients`;
+      return `/dashboard/clients`;
     }
 
-    if (routePrefix === "user") {
-      return `/dashboard/user/clients/opportunity/${clientId}/add`;
-    } else {
-      return `/dashboard/${routePrefix}/manage/company/clients/${companyId}/opportunity/${clientId}/add`;
-    }
+    return `/dashboard/pipeline/clients/opportunity/${clientId}/add`;
   };
 
   const handleOpportunityClick = (opportunityId: string) => {
@@ -180,13 +174,20 @@ const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
                         Éditer
                       </ActionButton>
                       {onDeleteClick && (
-                        <ActionButton
-                          onClick={() => handleDeleteClick(opportunity)}
-                          variant="danger"
-                          size="small"
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(opportunity);
+                          }}
                         >
-                          <FaTrashAlt />
-                        </ActionButton>
+                          <ActionButton
+                            onClick={() => handleDeleteClick(opportunity)}
+                            variant="danger"
+                            size="small"
+                          >
+                            <FaTrashAlt />
+                          </ActionButton>
+                        </div>
                       )}
                     </div>
                   </td>
@@ -258,13 +259,20 @@ const OpportunityBoard: React.FC<OpportunityBoardProps> = ({
                   >
                     <h4 style={styles.opportunityTitle}>{opportunity.title}</h4>
                     {onDeleteClick && (
-                      <ActionButton
-                        onClick={() => handleDeleteClick(opportunity)}
-                        variant="danger"
-                        size="small"
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(opportunity);
+                        }}
                       >
-                        <FaTrashAlt />
-                      </ActionButton>
+                        <ActionButton
+                          onClick={() => handleDeleteClick(opportunity)}
+                          variant="danger"
+                          size="small"
+                        >
+                          <FaTrashAlt />
+                        </ActionButton>
+                      </div>
                     )}
                   </div>
                   <div style={styles.opportunityValue}>

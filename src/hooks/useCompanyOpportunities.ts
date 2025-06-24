@@ -5,7 +5,6 @@ import {
   Opportunity,
   getOpportunitiesByCompany,
 } from "@/services/opportunity.service";
-import { getRoutePrefix } from "@/utils/getRoutePrefix";
 
 interface UseCompanyOpportunitiesProps {
   companyId: string;
@@ -34,16 +33,8 @@ export const useCompanyOpportunities = ({
   const [isLoadingOpportunities, setIsLoadingOpportunities] = useState(false);
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
 
-  const routePrefix = getRoutePrefix(user?.role);
-
   const navigateToClientsList = () => {
-    if (routePrefix === "user") {
-      router.push(`/dashboard/user/clients`);
-    } else {
-      router.push(
-        `/dashboard/${routePrefix}/manage/company/clients/${companyId}`
-      );
-    }
+    router.push(`/dashboard/pipeline/clients?company=${companyId}`);
   };
 
   useEffect(() => {
@@ -65,7 +56,7 @@ export const useCompanyOpportunities = ({
       }
     };
 
-    if (user && ["admin", "manager", "user"].includes(user.role)) {
+    if (user) {
       fetchOpportunities();
     }
   }, [companyId, user]);
