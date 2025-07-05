@@ -130,6 +130,53 @@ const NavBar: React.FC<NavBarProps> = ({ user: initialUser }) => {
             <rect x="14" y="14" width="8" height="8" rx="1"></rect>
           </svg>
         </div>
+        <div
+          style={iconButtonStyle(hoveredIcon === 4)}
+          onMouseEnter={() => setHoveredIcon(4)}
+          onClick={() => navigateTo("/dashboard/stripe")}
+          title="Paiement Stripe"
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={dashboardStyles.svgIcon}
+          >
+            <rect width="32" height="32" rx="16" fill="#635BFF" />
+            <path
+              d="M23.5 17.5C23.5 19.9853 21.4853 22 19 22C16.5147 22 14.5 19.9853 14.5 17.5C14.5 15.0147 16.5147 13 19 13C21.4853 13 23.5 15.0147 23.5 17.5Z"
+              fill="white"
+            />
+            <path
+              d="M9 17.5C9 15.0147 11.0147 13 13.5 13C15.9853 13 18 15.0147 18 17.5C18 19.9853 15.9853 22 13.5 22C11.0147 22 9 19.9853 9 17.5Z"
+              fill="white"
+            />
+          </svg>
+        </div>
+        <div
+          style={iconButtonStyle(hoveredIcon === 5)}
+          onMouseEnter={() => setHoveredIcon(5)}
+          onClick={() => navigateTo("/dashboard/metrics")}
+          title="Métriques des Services"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={dashboardStyles.svgIcon}
+          >
+            <path d="M3 3v18h18" />
+            <path d="m19 9-5 5-4-4-3 3" />
+          </svg>
+        </div>
       </>
     );
 

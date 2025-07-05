@@ -238,8 +238,6 @@ const ClientForm: React.FC<ClientFormProps> = ({
             style={{
               fontSize: "50px",
               marginBottom: "8px",
-              color: "#333333",
-              fontFamily: "var(--font-first)",
             }}
           >
             {mode === "create" ? "Ajouter un client" : "Modifier le client"}
